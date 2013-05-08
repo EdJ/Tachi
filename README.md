@@ -2,10 +2,6 @@
 
 Node.js MVC framework for seriously rapid application development.
 
-## Installation
-
-npm install Tachi
-
 ## Overview
 
 Quickly get up and running with a node.js MVC app, using a simple view syntax and an ASP.NET MVC-style project layout. Tachi is all about ease of rapid development, with a simple mindset, easily expandable feature set, and a number of features to help increase web application speed.
