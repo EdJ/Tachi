@@ -10,6 +10,8 @@ Catch me on twitter (http://twitter.com/sigmoidfx) for more info!
 
 ## Quick Start
 
+	npm install tachi
+
 Grab a copy of the twitter bootstrap template for Tachi (http://github.com/EdJ/Tachi-bootstrap), or just use the following code:
 
 Controllers/DefaultController.js:
