@@ -1,5 +1,5 @@
 {
-  "name": "Tachi",
+  "name": "tachi",
   "description": "Node.js MVC framework for seriously rapid application development.",
   "version": "0.0.1",
   "author": "Ed J <ed@ed-j.co.uk>",
@@ -14,7 +14,7 @@
   "devDependencies": {
   },
   "keywords": [
-    "Tachi",
+    "tachi",
     "framework",
     "mvc",
     "web",
