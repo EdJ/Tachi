@@ -1,0 +1,35 @@
+{
+  "name": "Tachi",
+  "description": "Node.js MVC framework for seriously rapid application development.",
+  "version": "0.0.1",
+  "author": "Ed J <ed@ed-j.co.uk>",
+  "contributors": [
+    {
+      "name": "Ed J",
+      "email": "ed@ed-j.co.uk"
+    }
+  ],
+  "dependencies": {
+  },
+  "devDependencies": {
+  },
+  "keywords": [
+    "Tachi",
+    "framework",
+    "mvc",
+    "web",
+    "rapid",
+    "restful",
+    "router"
+  ],
+  "repository": "git://github.com/EdJ/Tachi",
+  "main": "index",
+  "bin": {
+    "express": "./index"
+  },
+  "scripts": {
+  },
+  "engines": {
+    "node": "*"
+  }
+}

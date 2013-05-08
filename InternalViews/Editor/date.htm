@@ -1,0 +1,9 @@
+<label for="<%= name %>">
+	<%= label.withSpaces() %>
+</label>
+<% 
+    var day = ("0" + value.getDate()).slice(-2);
+    var month = ("0" + (value.getMonth() + 1)).slice(-2);
+    var date = value.getFullYear() + "-" + (month) + "-" + (day);
+%>
+<input type="date" name="<%= name %>" id="<%= name %>" value="<%= date %>" />
