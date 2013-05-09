@@ -13,8 +13,7 @@ module.exports = (function () {
         var defaultUrl = settings.defaultRoute || '/';
         var defaultRoute = router.parse(defaultUrl);
 
-        var loginUrl = settings.defaultRoute || '/Login';
-        var loginRoute = router.parse(loginUrl);
+        var loginUrl = settings.loginUrl || '/Login';
 
         var thisReference = this;
 
@@ -67,15 +66,19 @@ module.exports = (function () {
             if (controller) {
                 var toCall = null;
                 if (data._method === 'POST') {
-                    toCall = controller[action + '_post']; 
+                    if (controller[action + '_post']) {
+                        action = action + '_post';
+                    }
                 }
 
-                toCall = toCall || controller[action]; 
-
-                if (toCall) {
+                if (controller[action]) {
                     if (controller._authenticate && controller._authenticate[action]) {
                         if (!authHandler.isAuthenticated(controller)) {
-                            thisReference.toController(req, res, loginRoute, callback, true);
+                            res.writeHead(302, {
+                              'Location': loginUrl
+                            });
+
+                            res.end();
                             return;
                         }
                     }
