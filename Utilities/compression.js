@@ -2,7 +2,7 @@
 var Deferred = require('../Async/Deferred');
 
 module.exports = (function () {
-    var compress = function (data, type, callback) {
+    var compress = function (data, type) {
         var toCall;
         if (type == 'deflate') {
             toCall = zlib.deflate;
