@@ -53,12 +53,14 @@ module.exports = (function () {
                     finaliseRequest(data);
                 }
 
-                compression.compress(output, type, function (err, zipData) {
-                    if (!err) {
+                var deferred = compression.compress(output, type);
+
+                deferred.onComplete(function (zipData) {
+                    if (!zipData.error) {
                         compression.adjustHeaders(headers, type);
                     }
 
-                    finaliseRequest(zipData);
+                    finaliseRequest(zipData.data);
                 });
             };
 

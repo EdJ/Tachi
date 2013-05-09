@@ -29,9 +29,9 @@
                 return;
             }
 
+            hasCompleted = true;
             outputData = data;
             this.onCallback = initiateCallback;
-            hasCompleted = true;
 
             for (var i = 0, l = stack.length; i < l; i++) {
                 initiateCallback(stack[i]);

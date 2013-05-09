@@ -1,4 +1,5 @@
 ﻿var zlib = require('zlib');
+var Deferred = require('../Async/Deferred');
 
 module.exports = (function () {
     var compress = function (data, type, callback) {
@@ -9,19 +10,18 @@ module.exports = (function () {
             toCall = zlib.gzip;
         }
 
-        toCall(data, function (err, zipData) {
-            var toReturn;
+        var deferred = new Deferred();
 
-            if (err) {
-                toReturn = data;
-            } else {
-                toReturn = zipData;
-            }
+        toCall(data, function (error, zipData) {
+            var toReturn = error ? data : zipData;
 
-            process.nextTick(function () {
-                callback(err, toReturn);
+            deferred.complete({
+                error: error,
+                data: toReturn
             });
         });
+
+        return deferred;
     };
 
     var compressable = ['js', 'css', 'htm', 'html'];
