@@ -60,6 +60,30 @@ BaseController = module.exports = (function () {
         };
     };
 
+    var getParameters = function (controller, action, params) {
+        if (typeof controller === 'object') {
+            controller.controller = controller.controller || this._name;
+            controller.action = controller.action || 'index';
+
+            return controller;
+        }
+
+        params = params || action;
+        if (typeof params !== 'object') {
+            params = {};
+        }
+
+        if (typeof action !== 'string') {
+            action = controller;
+            controller = this._name;
+        }
+
+        params.controller = controller;
+        params.action = action || 'index';
+
+        return params;
+    };
+
     return {
         AsyncFinished: function (data) {
             this._promiseCallback(data);
@@ -83,32 +107,22 @@ BaseController = module.exports = (function () {
 
             return view.view(c);
         },
-        Action: function (data) {
-            if (!data) {
-                data = {};
-            }
+        Action: function (controller, action, params) {
+            var actualParameters = getParameters.call(this, controller, action, params);
 
-            var controller = ClassLoader.getController(data.controller);
-            var action = data.action || 'index';
+            var controller = ClassLoader.getController(actualParameters.controller);
+            var action = actualParameters.action;
 
             if (controller && controller[action]) {
-                return controller[action](data);
+                return controller[action](actualParameters);
             }
 
             return '';
         },
         ActionLink: function (controller, action, params) {
-            if (!params && typeof controller !== 'string') {
-                params = controller;
-                controller = params.controller;
-            }
+            var actualParameters = getParameters.call(this, controller, action, params);
 
-            params = params || {};
-
-            params.action = params.action || action;
-            params.controller = params.controller || controller;
-
-            return Router.getActionLink(params);
+            return Router.getActionLink(actualParameters);
         },
         Json: function (data) {
             return JSON.stringify(data);
