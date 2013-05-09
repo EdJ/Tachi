@@ -16,6 +16,8 @@ module.exports = (function () {
         var loginUrl = settings.defaultRoute || '/Login';
         var loginRoute = router.parse(loginUrl);
 
+        var thisReference = this;
+
         this.toController = function (req, res, data, callback, failedPreviously) {
             if (!data || !data.controller) {
                 data = Utils.extend(data || {}, defaultRoute);
@@ -60,24 +62,33 @@ module.exports = (function () {
                 });
             };
 
-            if (controller && controller[action]) {
-                if (controller._authenticate && controller._authenticate[action]) {
-                    if (!authHandler.isAuthenticated(controller)) {
-                        this.toController(req, res, loginRoute, callback, true);
-                        return;
+            if (controller) {
+                var toCall = null;
+                if (data._method === 'POST') {
+                    toCall = controller[action + '_post']; 
+                }
+
+                toCall = toCall || controller[action]; 
+
+                if (toCall) {
+                    if (controller._authenticate && controller._authenticate[action]) {
+                        if (!authHandler.isAuthenticated(controller)) {
+                            thisReference.toController(req, res, loginRoute, callback, true);
+                            return;
+                        }
                     }
+
+                    controller._promiseCallback = onCallback;
+                    var output = controller[action](data);
+
+                    if (output) {
+                        process.nextTick(function () {
+                            onCallback(output);
+                        });
+                    }
+
+                    return;
                 }
-
-                controller._promiseCallback = onCallback;
-                var output = controller[action](data);
-
-                if (output) {
-                    process.nextTick(function () {
-                        onCallback(output);
-                    });
-                }
-
-                return;
             }
 
             if (failedPreviously) {
@@ -90,7 +101,7 @@ module.exports = (function () {
                 return;
             }
 
-            this.toController(req, res, defaultRoute, callback, true);
+            thisReference.toController(req, res, defaultRoute, callback, true);
         };
 
         this.dispatch = function (req, res, callback) {
@@ -126,10 +137,10 @@ module.exports = (function () {
 
                     data = Utils.extend(data, postData);
 
-                    this.toController(req, res, data, callback);
+                    thisReference.toController(req, res, data, callback);
                 });
             } else {
-                this.toController(req, res, data, callback);
+                thisReference.toController(req, res, data, callback);
             }
         };
 
