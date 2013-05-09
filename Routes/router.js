@@ -4,92 +4,93 @@ var authHandler = require('../Auth/authHandler');
 
 module.exports = (function () {
     return function Router(routes, statics, settings) {
-        var router = new (require(settings.routeParser || './routeParser'))(routes, statics);
-        var staticResourceHandler = new (require(settings.staticResourceHandler || './staticResourceHandler'))();
-        var defaultRoute = settings.defaultRoute || '/';
-        var dr = router.parse(defaultRoute);
+        var RouteParser = require(settings.routeParser || './routeParser');
+        var StaticResourceHandler = require(settings.staticResourceHandler || './staticResourceHandler');
 
-        var t = this;
+        var router = new RouteParser(routes, statics);
+        var staticResourceHandler = new StaticResourceHandler();
+
+        var defaultUrl = settings.defaultRoute || '/';
+        var defaultRoute = router.parse(defaultUrl);
+
+        var loginUrl = settings.defaultRoute || '/Login';
+        var loginRoute = router.parse(loginUrl);
 
         this.toController = function (req, res, data, callback, failedPreviously) {
             if (!data || !data.controller) {
-                data = dr;
+                data = Utils.extend(data || {}, defaultRoute);
             }
 
-            if (data.controller) {
-                var controller = ClassLoader.getController(data.controller, req, res);
-                var action = (data.action || 'index').toLowerCase();
-                var onCallback = function (output) {
-                    if (output._redirect) {
-                        res.writeHead(302, {
-                          'Location': output._redirect
-                        });
+            var controller = ClassLoader.getController(data.controller, req, res);
+            var action = (data.action || 'index').toLowerCase();
 
-                        res.end();
-                        return;
-                    }
+            var onCallback = function (output) {
+                if (output._redirect) {
+                    res.writeHead(302, {
+                      'Location': output._redirect
+                    });
 
-                    var headers = { 'Content-Type': 'text/html; charset=UTF-8' };
+                    res.end();
+                    return;
+                }
 
-                    var type = compression.checkHeaders(req, 'html');
+                var headers = { 'Content-Type': 'text/html; charset=UTF-8' };
 
-                    if (type) {
-                        compression.compress(output, type, function (err, zipData) {
-                            if (!err) {
-                                compression.adjustHeaders(headers, type);
-                            }
+                var type = compression.checkHeaders(req, 'html');
 
-                            res.writeHead(200, headers);
-                            res.write(zipData);
-
-                            process.nextTick(function () {
-                                callback(true);
-                            });
-                        });
-
-                        return;
-                    }
-
+                var finaliseRequest = function (data) {
                     res.writeHead(200, headers);
-                    res.write(output);
+                    res.write(data);
 
                     process.nextTick(function () {
                         callback(true);
                     });
                 };
 
-                if (controller && controller[action]) {
-                    if (controller._authenticate && controller._authenticate[action]) {
-                        if (!authHandler.isAuthenticated(controller)) {
-                            t.toController(req, res, dr, callback, true);
-                            return;
-                        }
-                    }
-
-                    controller._promiseCallback = onCallback;
-                    var output = controller[action](data);
-
-                    if (output) {
-                        process.nextTick(function () {
-                            onCallback(output);
-                        });
-                    }
-
-                    return;
+                if (!type) {
+                    finaliseRequest(data);
                 }
 
-                if (failedPreviously) {
-                    // To prevent infinite redirects when the default route is mis-specified.
+                compression.compress(output, type, function (err, zipData) {
+                    if (!err) {
+                        compression.adjustHeaders(headers, type);
+                    }
+
+                    finaliseRequest(zipData);
+                });
+            };
+
+            if (controller && controller[action]) {
+                if (controller._authenticate && controller._authenticate[action]) {
+                    if (!authHandler.isAuthenticated(controller)) {
+                        this.toController(req, res, loginRoute, callback, true);
+                        return;
+                    }
+                }
+
+                controller._promiseCallback = onCallback;
+                var output = controller[action](data);
+
+                if (output) {
                     process.nextTick(function () {
-                        var output = Html.View('Error', { title: 'Could not find route.', message: 'The requested route does not exist.' });
                         onCallback(output);
                     });
-
-                    return;
                 }
+
+                return;
             }
 
-            t.toController(req, res, dr, callback, true);
+            if (failedPreviously) {
+                // To prevent infinite redirects when the default route is mis-specified.
+                process.nextTick(function () {
+                    var output = Html.View('Error', { title: 'Could not find route.', message: 'The requested route does not exist.' });
+                    onCallback(output);
+                });
+
+                return;
+            }
+
+            this.toController(req, res, defaultRoute, callback, true);
         };
 
         this.dispatch = function (req, res, callback) {
@@ -125,10 +126,10 @@ module.exports = (function () {
 
                     data = Utils.extend(data, postData);
 
-                    t.toController(req, res, data, callback);
+                    this.toController(req, res, data, callback);
                 });
             } else {
-                t.toController(req, res, data, callback);
+                this.toController(req, res, data, callback);
             }
         };
 
