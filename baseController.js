@@ -6,6 +6,8 @@ ViewLoader = new ViewLoader([ ViewsDirectory, __dirname + '/InternalViews' ]);
 var ViewParser = require('./Views/viewParser');
 var Dependency = require('./dependency');
 
+var authHandler = require('./Auth/authHandler');
+
 BaseController = module.exports = (function () {
 
     var getHtmlView = function (viewName) {
@@ -133,6 +135,9 @@ BaseController = module.exports = (function () {
             return {
                 _redirect: link
             }
+        },
+        Authenticate: function () {
+            authHandler.authenticate(this);
         }
     };
 

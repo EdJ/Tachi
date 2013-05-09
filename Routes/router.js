@@ -1,5 +1,6 @@
 var compression = require('../Utilities/compression');
 var qs = require('querystring');
+var authHandler = require('../Auth/authHandler');
 
 module.exports = (function () {
     return function Router(routes, statics, settings) {
@@ -58,6 +59,13 @@ module.exports = (function () {
                 };
 
                 if (controller && controller[action]) {
+                    if (controller._authenticate && controller._authenticate[action]) {
+                        if (!authHandler.isAuthenticated(controller)) {
+                            t.toController(req, res, dr, callback, true);
+                            return;
+                        }
+                    }
+
                     controller._promiseCallback = onCallback;
                     var output = controller[action](data);
 
