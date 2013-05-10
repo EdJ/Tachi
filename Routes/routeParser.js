@@ -75,8 +75,6 @@ module.exports = (function () {
             var patternItems = pattern._parameters;
 
             if (patternItems.length > paramKeys.length) {
-                console.log(paramKeys);
-                console.log(pattern);
                 continue;
             }
 
