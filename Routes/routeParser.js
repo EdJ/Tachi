@@ -74,14 +74,20 @@ module.exports = (function () {
             var pattern = patterns[i];
             var patternItems = pattern._parameters;
 
-            var matches = -(Math.abs(patternItems.length - paramKeys.length));
+            if (patternItems.length > paramKeys.length) {
+                console.log(paramKeys);
+                console.log(pattern);
+                continue;
+            }
+
+            var matches = 0;
             for (var j = paramKeys.length; j--; ) {
                 if (!! ~patternItems.indexOf(paramKeys[j])) {
                     matches++;
                 }
             }
 
-            if (matches > currentBest) {
+            if (matches > currentBest && matches == patternItems.length) {
                 currentBest = matches;
                 bestMatch = pattern.url;
             }
@@ -92,11 +98,24 @@ module.exports = (function () {
 
     var getUrl = function (params) {
         var bestMatch = findBestMatchingUrl(params);
+        var qs = [];
+
         for (var key in params) {
-            bestMatch = bestMatch.replace('{' + key + '}', params[key]);
+            var toMatch = '{' + key + '}';
+            if (!bestMatch.match(toMatch)) {
+                qs.push(key + '=' + encodeURIComponent(params[key]));
+            } else {
+                bestMatch = bestMatch.replace(toMatch, params[key]);
+            }
         }
 
-        return bestMatch;
+        var qsString = '';
+
+        if (qs.length) {
+            qsString = '?' + qs.join('&');
+        }
+
+        return bestMatch + qsString;
     };
 
     var addStatic = function (pattern) {
