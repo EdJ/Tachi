@@ -17,6 +17,14 @@ module.exports = (function () {
 
         var thisReference = this;
 
+        var redirect = function (location, res) {
+            res.writeHead(302, {
+              'Location': location
+            });
+
+            res.end();
+        };
+
         this.toController = function (req, res, data, callback, failedPreviously) {
             if (!data || !data.controller) {
                 data = Utils.extend(data || {}, defaultRoute);
@@ -27,11 +35,7 @@ module.exports = (function () {
 
             var onCallback = function (output) {
                 if (output._redirect) {
-                    res.writeHead(302, {
-                      'Location': output._redirect
-                    });
-
-                    res.end();
+                    redirect(output._redirect, res);
                     return;
                 }
 
@@ -65,20 +69,14 @@ module.exports = (function () {
 
             if (controller) {
                 var toCall = null;
-                if (data._method === 'POST') {
-                    if (controller[action + '_post']) {
-                        action = action + '_post';
-                    }
+                if (data._method === 'POST' && controller[action + '_post']) {
+                    action = action + '_post';
                 }
 
                 if (controller[action]) {
                     if (controller._authenticate && controller._authenticate[action]) {
                         if (!authHandler.isAuthenticated(controller)) {
-                            res.writeHead(302, {
-                              'Location': loginUrl
-                            });
-
-                            res.end();
+                            redirect(loginUrl, res);
                             return;
                         }
                     }
@@ -109,17 +107,18 @@ module.exports = (function () {
             thisReference.toController(req, res, defaultRoute, callback, true);
         };
 
-        this.dispatch = function (req, res, callback) {
+        this.dispatch = function (req, res) {
+            var deferred = new Deferred();
             var url = req.url;
 
             var data = routeParser.parse(url);
             data = ComplexObjectParser.parse(data);
 
             if (!data || data._isStatic) {
-                var deferred = staticResourceHandler.serve(req, res, req.url);
+                var resourseHandlerDeferred = staticResourceHandler.serve(req, res, req.url);
 
-                deferred.onComplete(callback);
-                return;
+                resourseHandlerDeferred.onComplete(deferred.complete);
+                return deferred;
             }
 
             data._method = req.method;
@@ -144,11 +143,13 @@ module.exports = (function () {
 
                     data = Utils.extend(data, postData);
 
-                    thisReference.toController(req, res, data, callback);
+                    thisReference.toController(req, res, data, deferred.complete);
                 });
             } else {
-                thisReference.toController(req, res, data, callback);
+                thisReference.toController(req, res, data, deferred.complete);
             }
+
+            return deferred;
         };
 
         this.getActionLink = function (params) {

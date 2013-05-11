@@ -27,7 +27,9 @@ module.exports = (function () {
             Logger.log('Incoming request from ' + ip + '. (' + req.url + ')');
 
             try {
-                Router.dispatch(req, res, function (success) {
+                var routerDeferred = Router.dispatch(req, res);
+
+                routerDeferred.onComplete(function (success) {
                     if (!success) {
                         Logger.log('Routing failed. (' + req.url + ')');
                         failedRequest(res);
