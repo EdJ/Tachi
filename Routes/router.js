@@ -7,11 +7,11 @@ module.exports = (function () {
         var RouteParser = require(settings.routeParser || './routeParser');
         var StaticResourceHandler = require(settings.staticResourceHandler || './staticResourceHandler');
 
-        var router = new RouteParser(routes, statics);
+        var routeParser = new RouteParser(routes, statics);
         var staticResourceHandler = new StaticResourceHandler();
 
         var defaultUrl = settings.defaultRoute || '/';
-        var defaultRoute = router.parse(defaultUrl);
+        var defaultRoute = routeParser.parse(defaultUrl);
 
         var loginUrl = settings.loginUrl || '/Login';
 
@@ -112,7 +112,7 @@ module.exports = (function () {
         this.dispatch = function (req, res, callback) {
             var url = req.url;
 
-            var data = router.parse(url);
+            var data = routeParser.parse(url);
             data = ComplexObjectParser.parse(data);
 
             if (!data || data._isStatic) {
@@ -152,7 +152,7 @@ module.exports = (function () {
         };
 
         this.getActionLink = function (params) {
-            return router.getUrl(params);
+            return routeParser.getUrl(params);
         };
     };
 })();
