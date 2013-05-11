@@ -1,5 +1,4 @@
 ﻿var zlib = require('zlib');
-var Deferred = require('../Async/Deferred');
 
 module.exports = (function () {
     var compress = function (data, type) {

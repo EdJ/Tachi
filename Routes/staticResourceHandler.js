@@ -8,14 +8,17 @@ module.exports = function StaticResourceHandler() {
     this.gzipCache = {};
     this.deflateCache = {};
 
-    this.serve = function (request, resp, path, callback) {
+    this.serve = function (request, resp, path) {
+        var deferred = new Deferred();
+
         var contentTypes = ContentTypes;
         path = path || '.' + request.url;
 
         var spl = path.split('.');
         var ext = spl[spl.length - 1];
         if (!contentTypes[ext]) {
-            return false;
+            deferred.complete(false);
+            return deferred;
         }
 
         var modifiedDate = request.headers['if-modified-since'];
@@ -35,8 +38,8 @@ module.exports = function StaticResourceHandler() {
 
         if (!wasModified) {
             resp.writeHead(304, headers);
-            process.nextTick(function () { callback(true) });
-            return;
+            deferred.complete(true);
+            return deferred;
         }
 
         var type = compression.checkHeaders(request, ext);
@@ -53,26 +56,22 @@ module.exports = function StaticResourceHandler() {
                         resp.writeHead(200, headers);
                         resp.write(zipData);
 
-                        process.nextTick(function () {
-                            callback(true);
-                        });
+                        deferred.complete(true);
                     });
                 } else {
                     resp.writeHead(200, headers);
                     resp.write(fileData);
 
-                    process.nextTick(function () {
-                        callback(true);
-                    });
+                    deferred.complete(true);
                 }
             } else {
                 Logger.log(fileErr);
 
-                process.nextTick(function () {
-                    callback(false);
-                });
+                deferred.complete(false);
             }
         });
+
+        return deferred;
     };
 
     this.generateHeaders = function (path, ext) {

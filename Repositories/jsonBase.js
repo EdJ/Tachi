@@ -9,8 +9,10 @@ module.exports = (function () {
         return fileName;
     };
 
-    var loadData = function (repoName, callback) {
+    var loadData = function (repoName) {
         var repoLocation = getFileName(repoName);
+
+        var deferred = new Deferred();
 
         fs.readFile(repoLocation, function (err, data) {
             if (err) {
@@ -22,15 +24,17 @@ module.exports = (function () {
                         ]
                 });
 
-                return [];
+                deferred.complete([]);
+
+                return;
             }
 
             var data = JSON.parse(data);
 
-            process.nextTick(function () {
-                callback(data);
-            });
+            deferred.complete(data);
         });
+
+        return deferred;
     };
 
     var saveData = function (repoName, list) {

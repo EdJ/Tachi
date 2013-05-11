@@ -116,7 +116,9 @@ module.exports = (function () {
             data = ComplexObjectParser.parse(data);
 
             if (!data || data._isStatic) {
-                staticResourceHandler.serve(req, res, req.url, callback);
+                var deferred = staticResourceHandler.serve(req, res, req.url);
+
+                deferred.onComplete(callback);
                 return;
             }
 

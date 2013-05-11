@@ -1,5 +1,5 @@
 ﻿module.exports = (function () {
-    var parseComplexObject = function (toParse, callback) {
+    var parseComplexObject = function (toParse) {
         var output = {};
 
         for (var segment in toParse) {
