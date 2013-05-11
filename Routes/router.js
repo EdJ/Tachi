@@ -25,7 +25,9 @@ module.exports = (function () {
             res.end();
         };
 
-        this.toController = function (req, res, data, callback, failedPreviously) {
+        this.toController = function (req, res, data, failedPreviously) {
+            var deferred = new Deferred();
+
             if (!data || !data.controller) {
                 data = Utils.extend(data || {}, defaultRoute);
             }
@@ -36,6 +38,7 @@ module.exports = (function () {
             var onCallback = function (output) {
                 if (output._redirect) {
                     redirect(output._redirect, res);
+                    deferred.complete(true);
                     return;
                 }
 
@@ -47,18 +50,15 @@ module.exports = (function () {
                     res.writeHead(200, headers);
                     res.write(data);
 
-                    process.nextTick(function () {
-                        callback(true);
-                    });
+                    deferred.complete(true);
                 };
 
                 if (!type) {
                     finaliseRequest(data);
                 }
 
-                var deferred = compression.compress(output, type);
-
-                deferred.onComplete(function (zipData) {
+                compression.compress(output, type)
+                .onComplete(function (zipData) {
                     if (!zipData.error) {
                         compression.adjustHeaders(headers, type);
                     }
@@ -77,7 +77,8 @@ module.exports = (function () {
                     if (controller._authenticate && controller._authenticate[action]) {
                         if (!authHandler.isAuthenticated(controller)) {
                             redirect(loginUrl, res);
-                            return;
+                            deferred.complete(true);
+                            return deferred;
                         }
                     }
 
@@ -85,43 +86,36 @@ module.exports = (function () {
                     var output = controller[action](data);
 
                     if (output) {
-                        process.nextTick(function () {
-                            onCallback(output);
-                        });
+                        onCallback(output);
                     }
 
-                    return;
+                    return deferred;
                 }
             }
 
             if (failedPreviously) {
                 // To prevent infinite redirects when the default route is mis-specified.
-                process.nextTick(function () {
-                    var output = Html.View('Error', { title: 'Could not find route.', message: 'The requested route does not exist.' });
-                    onCallback(output);
-                });
-
-                return;
+                var output = Html.View('Error', { title: 'Could not find route.', message: 'The requested route does not exist.' });
+                onCallback(output);
+                return deferred;
             }
 
-            thisReference.toController(req, res, defaultRoute, callback, true);
+            return thisReference.toController(req, res, defaultRoute, true);
         };
 
         this.dispatch = function (req, res) {
-            var deferred = new Deferred();
             var url = req.url;
 
             var data = routeParser.parse(url);
             data = ComplexObjectParser.parse(data);
 
             if (!data || data._isStatic) {
-                var resourseHandlerDeferred = staticResourceHandler.serve(req, res, req.url);
-
-                resourseHandlerDeferred.onComplete(deferred.complete);
-                return deferred;
+                return staticResourceHandler.serve(req, res, req.url);
             }
 
             data._method = req.method;
+
+            var deferred = new Deferred();
 
             if (req.method == 'POST') {
                 var body = '';
@@ -143,13 +137,13 @@ module.exports = (function () {
 
                     data = Utils.extend(data, postData);
 
-                    thisReference.toController(req, res, data, deferred.complete);
+                    thisReference.toController(req, res, data).onComplete(deferred.complete);
                 });
-            } else {
-                thisReference.toController(req, res, data, deferred.complete);
-            }
 
-            return deferred;
+                return deferred;
+            } else {
+                return thisReference.toController(req, res, data);
+            }
         };
 
         this.getActionLink = function (params) {
