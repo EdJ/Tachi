@@ -1,7 +1,7 @@
 {
   "name": "tachi",
   "description": "Node.js MVC framework for seriously rapid application development.",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "Ed J <ed@ed-j.co.uk>",
   "contributors": [
     {
