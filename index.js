@@ -5,7 +5,7 @@ module.exports = (function () {
         (require('./setup.js'))(settings);
 
         Logger.log('Setup Complete.');
-        Router = new (require('Tachi/Routes/router'))(routes.routes, routes.statics, settings);
+        Router = new (require('tachi/Routes/router'))(routes.routes, routes.statics, settings);
 
         var failedRequest = function (res) {
             res.writeHead(404, { 'Content-Type': 'text/html; charset=UTF-8' });

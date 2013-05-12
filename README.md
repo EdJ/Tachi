@@ -40,7 +40,7 @@ index.js:
 	};
 
 	var settings = {
-	    logger: 'Tachi/Logging/consoleLogger',
+	    logger: 'tachi/Logging/consoleLogger',
 	    defaultRoute: '/Error?errorCode=404',
 	    appRoot: __dirname,
 	    port: 8080
