@@ -10,8 +10,15 @@
     };
 
     var parseDate = function (input) {
+        input = input + '';
+
+        // Have to check this, or we greedily parse anything that contains 3 numbers.
+        if (!/[\/| |-]/.test(input)) {
+            return 'Invalid Date';
+        }
+
         // Force the parse as a string.
-        var parts = (input + '').match(/(\d+)/g);
+        var parts = (input).match(/(\d+)/g);
         if (!parts) {
           return 'Invalid Date';
         }
@@ -48,7 +55,7 @@
             value = dateValue;
         } else {
             var possibleInt = parseInt(value, 10);
-            if (!isNaN(possibleInt)) {
+            if (!isNaN(possibleInt) && /^-{0,1}\d*\.{0,1}\d+$/.test(value)) {
                 value = possibleInt
             }
         }
