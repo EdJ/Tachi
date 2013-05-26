@@ -59,8 +59,70 @@ module.exports = (function () {
         });
     };
 
-    return {
-        load: loadData,
-        save: saveData
+    return function JsonRepository(repoName) {
+        var _internalList = {};
+
+        var deferred = loadData(repoName);
+
+        deferred.onComplete(function (data) {
+            var item;
+            for (var i = data.length; i--; ) {
+                item = data[i];
+                _internalList[item.id] = item;
+            }
+        });
+
+        var getList = function () {
+            var output = [];
+            for (var id in _internalList) {
+                output.push(_internalList[id]);
+            }
+
+            output.reverse();
+
+            return output;
+        };
+
+        this.get = function (id) {
+            return _internalList[id] || _internalList[id + ''];
+        };
+
+        this.update = function (post) {
+            _internalList[post.id] = post;
+
+            saveData(repoName, getList());
+        };
+
+        this.add = function (post) {
+            var nextPostId = 0;
+
+            for (var postId in _internalList) {
+
+                var id = _internalList[postId].id;
+
+                if (id > nextPostId) {
+                    nextPostId = id;
+                }
+            }
+
+            nextPostId++;
+
+            post.id = nextPostId;
+            _internalList[post.id] = post;
+
+            saveData(repoName, getList());
+
+            return post.id;
+        };
+
+        this.remove = function (id) {
+            delete _internalList[id];
+
+            saveData(repoName, getList());
+        };
+
+        this.getAll = function () {
+            return getList();
+        };
     };
 })();
