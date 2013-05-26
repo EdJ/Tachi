@@ -48,13 +48,14 @@ module.exports = function StaticResourceHandler() {
             if (!fileErr) {
                 if (type) {
                     compression.adjustHeaders(headers, type);
-                    compression.compress(fileData, type, function (err, zipData) {
-                        if (err) {
+                    var compressionDeferred = compression.compress(fileData, type);
+                    compressionDeferred.onComplete(function (zipData) {
+                        if (zipData.err) {
                             delete headers['Content-Encoding'];
                         }
 
                         resp.writeHead(200, headers);
-                        resp.write(zipData);
+                        resp.write(zipData.data);
 
                         deferred.complete(true);
                     });
