@@ -10,7 +10,6 @@ ViewParser = module.exports ={
       return this.cache[name];
     }
 
-    var overView = '';
     var extracted = this.extractProperties(unParsedTemplate);
 
     var properties = extracted.properties;
