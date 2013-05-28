@@ -1,10 +1,15 @@
 var fs = require('fs');
 
-module.exports = (function () {
-    var getFileName = function (repoName) {
-        var dir = 'data';
+module.exports = function (connectionDetails) {
+    var baseDirectory = './' + connectionDetails.baseDirectory || 'data';
 
-        var fileName = './' + dir + '/' + repoName + '-repo.js';
+    var dataDirectoryExists = fs.existsSync(baseDirectory);
+    if (!dataDirectoryExists) {
+        fs.mkdirSync(baseDirectory);
+    }
+
+    var getFileName = function (repoName) {
+        var fileName = baseDirectory + '/' + repoName + '-repo.js';
 
         return fileName;
     };
@@ -38,6 +43,8 @@ module.exports = (function () {
     };
 
     var saveData = function (repoName, list) {
+        var deferred =  new Deferred();
+
         var s = JSON.stringify(list);
 
         var repoLocation = getFileName(repoName);
@@ -52,16 +59,23 @@ module.exports = (function () {
                         ]
                 });
 
+                deferred.complete(false);
+
                 return;
             };
 
             Logger.log('Data loaded from: ' + repoLocation);
+
+            deferred.complete(true);
         });
+
+        return deferred;
     };
 
-    return function JsonRepository(repoName) {
-        var _internalList = {};
+    var _allItems = {};
 
+    return function JsonRepository(repoName) {
+        var _internalList = _allItems[repoName] || {};
         var deferred = loadData(repoName);
 
         deferred.onComplete(function (data) {
@@ -70,6 +84,8 @@ module.exports = (function () {
                 item = data[i];
                 _internalList[item.id] = item;
             }
+
+            _allItems[repoName] = _internalList;
         });
 
         var getList = function () {
@@ -84,13 +100,17 @@ module.exports = (function () {
         };
 
         this.get = function (id) {
-            return _internalList[id] || _internalList[id + ''];
+            var deferred = new Deferred();
+
+            deferred.complete(_internalList[id] || _internalList[id + '']);
+
+            return deferred;
         };
 
         this.update = function (post) {
             _internalList[post.id] = post;
 
-            saveData(repoName, getList());
+            return saveData(repoName, getList());
         };
 
         this.add = function (post) {
@@ -110,19 +130,29 @@ module.exports = (function () {
             post.id = nextPostId;
             _internalList[post.id] = post;
 
-            saveData(repoName, getList());
+            var saveDeferred = saveData(repoName, getList());
 
-            return post.id;
+            var deferred = new Deferred();
+            saveDeferred.onComplete(function() {
+                deferred.complete(post.id);
+            });
+
+            return deferred;
         };
 
         this.remove = function (id) {
             delete _internalList[id];
 
-            saveData(repoName, getList());
+            return saveData(repoName, getList());
         };
 
         this.getAll = function () {
-            return getList();
+            var deferred = new Deferred();
+            
+            var items = getList();
+            deferred.complete(items);
+
+            return deferred;
         };
     };
-})();
+};

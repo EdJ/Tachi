@@ -8,7 +8,7 @@ module.exports = function (settings) {
         return logger;
     })();
     ClassLoader = require('tachi/classLoader');
-    JsonRepository = require('tachi/Repositories/jsonBase');
+    Repository = require(settings.repository || 'tachi/Repositories/jsonRepository'))(settings.connectionDetails);
     Html = require('tachi/Utilities/html');
     AppRoot = settings.appRoot;
     ComplexObjectParser = require('tachi/Utilities/complexObjectParser');
