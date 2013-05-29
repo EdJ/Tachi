@@ -14,5 +14,5 @@ module.exports = function (settings) {
     ComplexObjectParser = require('tachi/Utilities/complexObjectParser');
     Deferred = require('tachi/Async/deferred');
     AuthHandler = require('tachi/Auth/authHandler');
-    Cookie = require('tachi/Utilities/cookie');
+    Cookie = require('tachi/Utilities/cookie')();
 };
