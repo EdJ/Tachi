@@ -27,6 +27,7 @@
   "bin": {
   },
   "scripts": {
+    "test":"mocha --recursive -R spec"
   },
   "engines": {
     "node": "*"
