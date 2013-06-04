@@ -1,7 +1,7 @@
 {
   "name": "tachi",
   "description": "Node.js MVC framework for seriously rapid application development.",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "author": "Ed J <ed@ed-j.co.uk>",
   "contributors": [
     {
@@ -13,7 +13,8 @@
   },
   "devDependencies": {
     "mocha":">= 1.10.0",
-    "should":">= 1.2.2"
+    "should":">= 1.2.2",
+    "proxyquire":">= 0.4.1"
   },
   "keywords": [
     "tachi",
@@ -29,7 +30,7 @@
   "bin": {
   },
   "scripts": {
-    "test":"mocha --recursive -R spec"
+    "test":"mocha"
   },
   "engines": {
     "node": "*"

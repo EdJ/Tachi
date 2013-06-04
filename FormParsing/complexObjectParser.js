@@ -1,4 +1,8 @@
-﻿module.exports = (function () {
+var FormValueParser = require('./formValueParser');
+
+module.exports = (function () {
+    var formValueParser = new FormValueParser();
+
     var parseComplexObject = function (toParse) {
         var output = {};
 
@@ -7,23 +11,6 @@
         }
 
         return output;
-    };
-
-    var parseDate = function (input) {
-        input = input + '';
-
-        // Have to check this, or we greedily parse anything that contains 3 numbers.
-        if (!/[\/| |-]/.test(input)) {
-            return 'Invalid Date';
-        }
-
-        // Force the parse as a string.
-        var parts = (input).match(/(\d+)/g);
-        if (!parts) {
-          return 'Invalid Date';
-        }
-
-        return new Date(parts[0], parts[1]-1, parts[2]);
     };
 
     var parseComplexObjectPart = function (name, value, addTo) {
@@ -50,7 +37,7 @@
         }
 
         // parseInt is fairly greedy, so parse for a date first.
-        var dateValue = parseDate(value);
+        var dateValue = formValueParser.parseDate(value);
         if (dateValue != 'Invalid Date') {
             value = dateValue;
         } else {
@@ -63,7 +50,7 @@
         current[parts[parts.length - 1]] = value;
     };
 
-    return {
-        parse: parseComplexObject
+    return function ComplexObjectParser() {
+        this.parse = parseComplexObject;
     };
 })();

@@ -20,15 +20,18 @@
     this.set = function (res, cookie) {
         if (!res
          || !res.setHeader
-         || typeof res.setHeader !== ' function') {
+         || typeof res.setHeader !== 'function') {
             // Not a valid response.
             return;
         }
 
+        console.log(cookie);
         for (var key in cookie) {
             if (!cookie.hasOwnProperty(key)){
                 continue;
             }
+
+            console.log(key);
 
             res.setHeader('Set-Cookie', key + '=' + cookie[key]);
         }

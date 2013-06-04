@@ -11,8 +11,15 @@ module.exports = function (settings) {
     Repository = require(settings.repository || 'tachi/Repositories/jsonRepository')(settings.connectionDetails);
     Html = require('tachi/Utilities/html');
     AppRoot = settings.appRoot;
-    ComplexObjectParser = require('tachi/Utilities/complexObjectParser');
+
+    // TODO: This syntax is not ideal...
+    var complexObjectParser = require('tachi/FormParsing/complexObjectParser');
+    ComplexObjectParser = new complexObjectParser();
+    
     Deferred = require('tachi/Async/deferred');
     AuthHandler = require('tachi/Auth/authHandler');
-    Cookie = require('tachi/Utilities/cookie')();
+
+    // TODO: ...and again.
+    var cookie = require('tachi/Utilities/cookie');
+    Cookie = new cookie();
 };
