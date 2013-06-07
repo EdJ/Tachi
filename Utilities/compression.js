@@ -1,4 +1,5 @@
 ﻿var zlib = require('zlib');
+var Deferred = require('../Async/deferred');
 
 module.exports = (function () {
     var compress = function (data, type) {
@@ -26,18 +27,16 @@ module.exports = (function () {
     var compressable = ['js', 'css', 'htm', 'html'];
 
     var isContentCompressable = function (ext) {
-        return !! ~compressable.indexOf(ext);
+        return !! ~compressable.indexOf(ext) || /json|text|javascript/.test(ext);
     };
 
     var checkHeaders = function (request, ext) {
         var acceptEncoding = request.headers['accept-encoding'] || '';
 
-        var isCompressable = isContentCompressable(ext);
-
-        var type;
-        if (isCompressable && (acceptEncoding.match(/\*/) || acceptEncoding.match(/\bdeflate\b/))) {
+        var type = '';
+        if (acceptEncoding.match(/\*/) || acceptEncoding.match(/\bdeflate\b/)) {
             type = 'deflate';
-        } else if (isCompressable && acceptEncoding.match(/\bgzip\b/)) {
+        } else if (acceptEncoding.match(/\bgzip\b/)) {
             type = 'gzip';
         }
 
@@ -56,6 +55,7 @@ module.exports = (function () {
     return {
         compress: compress,
         checkHeaders: checkHeaders,
+        isContentCompressable: isContentCompressable,
         adjustHeaders: adjustHeaders
     };
 })();

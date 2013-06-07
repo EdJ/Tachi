@@ -42,11 +42,13 @@ module.exports = function StaticResourceHandler() {
             return deferred;
         }
 
-        var type = compression.checkHeaders(request, ext);
+        var isContentCompressable = compression.isContentCompressable(ext);
+
+        var type = compression.checkHeaders(request);
 
         fs.readFile(AppRoot + path, function (fileErr, fileData) {
             if (!fileErr) {
-                if (type) {
+                if (isContentCompressable && type) {
                     compression.adjustHeaders(headers, type);
                     var compressionDeferred = compression.compress(fileData, type);
                     compressionDeferred.onComplete(function (zipData) {

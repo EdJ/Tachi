@@ -44,7 +44,9 @@ module.exports = (function () {
 
                 var headers = { 'Content-Type': 'text/html; charset=UTF-8' };
 
-                var type = compression.checkHeaders(req, 'html');
+                var isContentCompressable = compression.isContentCompressable('html');
+
+                var type = compression.checkHeaders(req);
 
                 var finaliseRequest = function (data) {
                     res.writeHead(200, headers);
@@ -53,7 +55,7 @@ module.exports = (function () {
                     deferred.complete(true);
                 };
 
-                if (!type) {
+                if (!isContentCompressable || !type) {
                     finaliseRequest(data);
                 }
 
