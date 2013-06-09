@@ -1,6 +1,6 @@
 var assert = require('should');
 var proxyquire = require('proxyquire');
-Deferred = require('../../Async/Deferred');
+Deferred = require('../../Async/deferred');
 
 var getCompressionHandler = function(compressionProxy) {
 	return proxyquire('../../Utilities/compressionHandler', {
