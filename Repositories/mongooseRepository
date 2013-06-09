@@ -1,0 +1,66 @@
+var mongoose = require('mongoose');
+var ObjectId = require('mongoose').Types.ObjectId;
+
+module.exports = function (connectionDetails) {
+    var connection = mongoose.createConnection(connectionDetails.server, connectionDetails.database);
+
+    connection.on('error', console.error.bind(console, 'connection error:'));
+
+    return function MongooseRepository(repoName, schema) {
+        this._schema = mongoose.Schema(schema);
+        this._repoName = repoName;
+
+        var Model = connection.model(this._repoName, this._schema);
+
+        this.get = function (id) {
+            var deferred = new Deferred();
+
+            Model.findById(new ObjectId(id), function (err, item) {
+                deferred.complete(item);
+            });
+
+            return deferred;
+        };
+
+        this.update = function (entity) {
+            var id = entity._id;
+            delete entity._id;
+
+            var deferred = new Deferred();
+
+            Model.update({ _id: id }, entity, function (err) {
+                deferred.complete(err);
+            });
+
+            return deferred;
+        };
+
+        this.add = function (entity) {
+            var item = new Model(entity);
+
+            var deferred = new Deferred();
+
+            item.save(function (err, newItem) {
+                console.log(newItem._id);
+                
+                deferred.complete(newItem._id);
+            });
+
+            return deferred;
+        };
+
+        this.remove = function (id) {
+            Model.remove({ _id: new ObjectId(id) }).exec();
+        };
+
+        this.getAll = function () {
+            var deferred = new Deferred();
+            
+            Model.find(function (err, items) {
+                deferred.complete(items);
+            });
+
+            return deferred;
+        };
+    };
+};
