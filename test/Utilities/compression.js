@@ -1,5 +1,5 @@
 var proxyquire = require('proxyquire');
-var Deferred = require('../../Async/deferred');
+Deferred = require('../../Async/deferred');
 
 describe('compression', function() {
 	describe('#checkHeaders()', function() {
@@ -135,7 +135,7 @@ describe('compression', function() {
 						proxyZlib.gzipWasCalled = gzip;
 						proxyZlib.deflateWasCalled = deflate;
 
-						callback(null, data);
+						callback(null, 'compressed');
 					};
 				};
 
@@ -158,9 +158,9 @@ describe('compression', function() {
 
 				deferred.onComplete(function(result) {
 					result.should.have.property('error');
-					result.should.have.property('data');
+					result.should.have.property('compressedData');
 					(!result.error).should.be.true;
-					result.data.should.equal('test');
+					result.compressedData.should.equal('compressed');
 
 					proxyZlib.gzipWasCalled.should.be.false;
 					proxyZlib.deflateWasCalled.should.be.true;
@@ -174,12 +174,77 @@ describe('compression', function() {
 
 				deferred.onComplete(function(result) {
 					result.should.have.property('error');
-					result.should.have.property('data');
+					result.should.have.property('compressedData');
 					(!result.error).should.be.true;
-					result.data.should.equal('test');
+					result.compressedData.should.equal('compressed');
 
 					proxyZlib.gzipWasCalled.should.be.true;
 					proxyZlib.deflateWasCalled.should.be.false;
+
+					done();
+				});
+			});
+
+			afterEach(function() {
+				proxyZlib = null;
+				compression = null;
+			});
+		});
+
+		describe('invalid content tests', function() {
+			var compression;
+			var proxyZlib;
+			beforeEach(function() {
+				var proxyCompressFunction = function(gzip, deflate) {
+					return function(data, callback) {
+						proxyZlib.gzipWasCalled = gzip;
+						proxyZlib.deflateWasCalled = deflate;
+
+						callback('error', 'compressed');
+					};
+				};
+
+				proxyZlib = {
+					deflate: proxyCompressFunction(false, true),
+					gzip: proxyCompressFunction(true, false),
+					gzipWasCalled: false,
+					deflateWasCalled: false
+				};
+
+				var proxies = {
+					'zlib': proxyZlib
+				};
+
+				compression = proxyquire('../../Utilities/compression', proxies);
+			});
+
+			it('should return the original data when an error is returned when using gzip', function(done) {
+				var deferred = compression.compress('test', 'gzip');
+
+				deferred.onComplete(function(result) {
+					result.should.have.property('error');
+					result.should.have.property('compressedData');
+					result.error.should.equal('error');
+					result.compressedData.should.equal('test');
+
+					proxyZlib.gzipWasCalled.should.be.true;
+					proxyZlib.deflateWasCalled.should.be.false;
+
+					done();
+				});
+			});
+
+			it('should return the original data when an error is returned when using deflate', function(done) {
+				var deferred = compression.compress('test', 'deflate');
+
+				deferred.onComplete(function(result) {
+					result.should.have.property('error');
+					result.should.have.property('compressedData');
+					result.error.should.equal('error');
+					result.compressedData.should.equal('test');
+
+					proxyZlib.gzipWasCalled.should.be.false;
+					proxyZlib.deflateWasCalled.should.be.true;
 
 					done();
 				});

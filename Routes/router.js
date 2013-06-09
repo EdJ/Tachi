@@ -1,6 +1,6 @@
-var compression = require('../Utilities/compression');
 var qs = require('querystring');
 var authHandler = require('../Auth/authHandler');
+var compressionHandler = require('../Utilities/compressionHandler');
 
 module.exports = (function () {
     return function Router(routes, statics, settings) {
@@ -42,30 +42,9 @@ module.exports = (function () {
                     return;
                 }
 
-                var headers = { 'Content-Type': 'text/html; charset=UTF-8' };
-
-                var isContentCompressable = compression.isContentCompressable('html');
-
-                var type = compression.checkHeaders(req);
-
-                var finaliseRequest = function (data) {
-                    res.writeHead(200, headers);
-                    res.write(data);
-
+                compressionHandler(req, res, output)
+                .onComplete(function () {
                     deferred.complete(true);
-                };
-
-                if (!isContentCompressable || !type) {
-                    finaliseRequest(data);
-                }
-
-                compression.compress(output, type)
-                .onComplete(function (zipData) {
-                    if (!zipData.error) {
-                        compression.adjustHeaders(headers, type);
-                    }
-
-                    finaliseRequest(zipData.data);
                 });
             };
 

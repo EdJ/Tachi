@@ -1,5 +1,4 @@
-﻿var zlib = require('zlib');
-var Deferred = require('../Async/deferred');
+var zlib = require('zlib');
 
 module.exports = (function () {
     var compress = function (data, type) {
@@ -17,7 +16,7 @@ module.exports = (function () {
 
             deferred.complete({
                 error: error,
-                data: toReturn
+                compressedData: toReturn
             });
         });
 

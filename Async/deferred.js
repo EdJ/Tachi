@@ -37,6 +37,10 @@
                 initiateCallback(stack[i]);
             }
         };
+
+        this.isComplete = function () {
+            return hasCompleted;
+        };
     };
 
     Deferred.chain = function () {

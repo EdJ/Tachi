@@ -1,12 +1,10 @@
 var ContentTypes = require('../Utilities/mime');
 var fs = require('fs');
-var compression = require('../Utilities/compression');
+var compressionHandler = require('../Utilities/compressionHandler');
 
 module.exports = function StaticResourceHandler() {
     this.fileStats = {};
     this.rawCache = {};
-    this.gzipCache = {};
-    this.deflateCache = {};
 
     this.serve = function (request, resp, path) {
         var deferred = new Deferred();
@@ -42,31 +40,18 @@ module.exports = function StaticResourceHandler() {
             return deferred;
         }
 
-        var isContentCompressable = compression.isContentCompressable(ext);
-
-        var type = compression.checkHeaders(request);
-
         fs.readFile(AppRoot + path, function (fileErr, fileData) {
             if (!fileErr) {
-                if (isContentCompressable && type) {
-                    compression.adjustHeaders(headers, type);
-                    var compressionDeferred = compression.compress(fileData, type);
-                    compressionDeferred.onComplete(function (zipData) {
-                        if (zipData.err) {
-                            delete headers['Content-Encoding'];
-                        }
+                var toCompress = {
+                    toCompress: fileData,
+                    headers: headers,
+                    contentType: contentTypes[ext]
+                };
 
-                        resp.writeHead(200, headers);
-                        resp.write(zipData.data);
-
-                        deferred.complete(true);
-                    });
-                } else {
-                    resp.writeHead(200, headers);
-                    resp.write(fileData);
-
+                compressionHandler(request, resp, toCompress)
+                .onComplete(function () {
                     deferred.complete(true);
-                }
+                });
             } else {
                 Logger.log(fileErr);
 
