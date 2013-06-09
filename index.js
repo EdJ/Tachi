@@ -24,6 +24,7 @@ module.exports = (function () {
 
         var server = http.createServer(function (req, res) {
             var ip = getClientIp(req);
+            var start = new Date();
             Logger.log('Incoming request from ' + ip + '. (' + req.url + ')');
 
             try {
@@ -36,6 +37,7 @@ module.exports = (function () {
                     }
 
                     Logger.log('Response ended');
+                    Logger.log('Transaction Timing: ' + req.url + ' :: ' + (new Date() - start) + 'ms');
                     res.end();
                 });
             } catch (err) {
