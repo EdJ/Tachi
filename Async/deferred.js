@@ -6,12 +6,7 @@
 
         this.onComplete = function (callback) {
             if (hasCompleted) {
-                if (stack.length) {
-                    stack.push(callback);
-                } else {
-                    initiateCallback(callback);
-                }
-                
+                initiateCallback(callback);
                 return;
             }
 
@@ -54,12 +49,18 @@
         var callFunc = function (fromLast) {
             currentCallback++;
 
-            var possibleDeferred = chainedFunctions[currentCallback - 1](fromLast, nextFunc);
+            var next = chainedFunctions[currentCallback - 1];
+
+            if (!next) {
+                return;
+            }
+
+            var possibleDeferred = next(fromLast, nextFunc);
             if (possibleDeferred instanceof Deferred) {
                 possibleDeferred.onComplete(nextFunc);
             }
         };
-
+   
         var nextFunc = function (fromLast) {
             if (fromLast instanceof Deferred) {
                 fromLast.onComplete(nextFunc);
@@ -72,25 +73,38 @@
         };
 
         callFunc(0);
+
     };
 
     Deferred.when = function () {
         var callback = arguments[arguments.length - 1];
+
+        if (arguments.length == 1) {
+            callback();
+        }
+
         var count = 0;
+        var completionFunction = function () {
+            count--;
+            if (!count) {
+                process.nextTick(callback);
+            }
+        };
+
         for (var i = arguments.length - 1; i--; ) {
             var deferred = arguments[i];
 
+            if (deferred instanceof Function) {
+                deferred = deferred(completionFunction);
+            }
+
             if (!(deferred instanceof Deferred)) {
+                count++;
                 continue;
             }
 
             count++;
-            deferred.onComplete(function () {
-                count--;
-                if (!count) {
-                    process.nextTick(callback);
-                }
-            });
+            deferred.onComplete(completionFunction);
         }
     };
 
