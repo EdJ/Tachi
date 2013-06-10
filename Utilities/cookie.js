@@ -25,13 +25,10 @@
             return;
         }
 
-        console.log(cookie);
         for (var key in cookie) {
             if (!cookie.hasOwnProperty(key)){
                 continue;
             }
-
-            console.log(key);
 
             res.setHeader('Set-Cookie', key + '=' + cookie[key]);
         }
