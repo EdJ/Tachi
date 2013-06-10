@@ -36,12 +36,12 @@ module.exports = (function () {
             current = current[segment];
         }
 
-        // parseInt is fairly greedy, so parse for a date first.
+        // parseFloat is fairly greedy, so parse for a date first.
         var dateValue = formValueParser.parseDate(value);
         if (dateValue != 'Invalid Date') {
             value = dateValue;
         } else {
-            var possibleInt = parseInt(value, 10);
+            var possibleInt = parseFloat(value);
             if (!isNaN(possibleInt) && /^-{0,1}\d*\.{0,1}\d+$/.test(value)) {
                 value = possibleInt
             }
