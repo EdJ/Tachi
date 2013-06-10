@@ -1,20 +1,4 @@
-var qs = require('querystring');
-
 module.exports = {
-    getQsValue: function (url, value) {
-        var qsIndex = url.indexOf('?');
-        if (! ~qsIndex) {
-            return;
-        }
-
-        var unParsedQs = req.url.substring(qsIndex + 1);
-        var parsedQs = qs.parse(unParsedQs);
-        if (!parsedQs[value]) {
-            return;
-        }
-
-        return parsedQs[value];
-    },
     extend: function () {
         // This is a subsection of the jQuery.extend function with deep-copy functionality omitted.
         var t = arguments[0] || {};
@@ -33,7 +17,7 @@ module.exports = {
                 for (name in o) {
                     src = t[name];
                     copy = o[name];
-                    if (t === copy) {
+                    if (t === copy || o === copy) {
                         // This prevents infinite recursive copying.
                         continue;
                     }
