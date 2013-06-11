@@ -5,27 +5,18 @@ module.exports = (function () {
         var loadedFiles = {};
 
         var loadProcess = function (fileName, filePath) {
-            var readFile = function () {
-                FileSystem.readFile(filePath, 'UTF-8', function (err, data) {
-                    if (err) {
-                        Logger.log(err);
-                        throw err;
-                    }
+            FileSystem.readFile(filePath, 'UTF-8', function (err, data) {
+                if (err) {
+                    Logger.log(err);
+                    throw err;
+                }
 
-                    loadedFiles[fileName] = data;
+                loadedFiles[fileName] = data;
 
-                    if (perFileCallback) {
-                        perFileCallback(fileName, data);
-                    }
-                });
-            };
-
-            FileSystem.watch(filePath, function (event, filename) {
-                Logger.log('File changed: ' + filename);
-                readFile();
+                if (perFileCallback) {
+                    perFileCallback(fileName, data);
+                }
             });
-
-            readFile();
         };
 
         var requireProcess = function (fileName, filePath) {
