@@ -64,7 +64,7 @@ module.exports = (function() {
             }
         }
 
-        pattern.func = parsePattern(pattern.url);
+        pattern.func = generateParseFunction(pattern.url);
         pattern._parameters = getParameters(pattern.url);
         return pattern;
 	};

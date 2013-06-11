@@ -1,58 +1,14 @@
 var qs = require('querystring');
+var internalParser = require('./routeHandler/routeParser');
 
 module.exports = (function () {
     var patterns = [];
     var statics = [];
     var bestMatchForUrl = '';
 
-    var parsePattern = function (pattern) {
-        var f = ["var o = {};var v=true;with(str) {var t=str;var n=0;"];
-
-        var arr = pattern.split(/\{|\}/g);
-
-        var l = arr.length;
-
-        for (var i = 0; i < l; i++) {
-            var c = arr[i];
-            var v = arr[i + 1];
-            if (!v) {
-                continue;
-            }
-
-            f.push("t=t.substring(");
-            f.push(c.length);
-            f.push(");n=t.indexOf('");
-            f.push(arr[i + 2]);
-            f.push("');v=v&&!!~n;o['");
-            f.push(v);
-            f.push("']=t.substring(0,n);t=t.substring(n);");
-            i++;
-        }
-
-        f.push("};return v ? o : v;");
-
-        return new Function("str", f.join(''));
-    };
-
-    var getParameters = function (pattern) {
-        var items = pattern.replace(/[^\{]*\{([^\}]*)\}[^\{]*/g, '$1;').split(';');
-        if (items.length && !items[items.length - 1]) {
-            items.pop();
-        }
-
-        return items;
-    };
-
     var addPattern = function (pattern) {
-        if (!pattern.url) {
-            pattern = {
-                url: pattern,
-                data: {}
-            }
-        }
+        pattern = internalParser(pattern);
 
-        pattern.func = parsePattern(pattern.url);
-        pattern._parameters = getParameters(pattern.url);
         patterns.push(pattern);
     };
 
