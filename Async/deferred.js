@@ -7,10 +7,12 @@
         this.onComplete = function (callback) {
             if (hasCompleted) {
                 initiateCallback(callback);
-                return;
+                return this;
             }
 
             stack.push(callback);
+
+            return this;
         };
 
         var initiateCallback = function (callback) {
@@ -21,7 +23,7 @@
 
         this.complete = function (data) {
             if (hasCompleted) {
-                return;
+                return this;
             }
 
             hasCompleted = true;
@@ -31,6 +33,8 @@
             for (var i = 0, l = stack.length; i < l; i++) {
                 initiateCallback(stack[i]);
             }
+
+            return this;
         };
 
         this.isComplete = function () {

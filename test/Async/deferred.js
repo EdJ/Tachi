@@ -34,6 +34,13 @@ describe('Deferred', function() {
 		});
 	});
 
+	it('should be chainable.', function(done) {
+		var deferred = new Deferred().onComplete(function() {}).complete().onComplete(function() {}).complete().onComplete(function() {
+			deferred.isComplete().should.be.true;
+			done();
+		});
+	});
+
 	it('should run multiple callbacks when done.', function(done) {
 		var deferred = new Deferred();
 
@@ -186,7 +193,7 @@ describe('Deferred', function() {
 			});
 		});
 
-		describe('mixed', function () {
+		describe('mixed', function() {
 			it('should chain multiple functions and deferreds, ending with a deferred.', function(done) {
 				Deferred.chain(
 					chainedDeferred,
@@ -236,7 +243,7 @@ describe('Deferred', function() {
 		};
 
 		describe('deferreds', function() {
-			beforeEach(function (){ 
+			beforeEach(function() {
 				counter = 0;
 			});
 
@@ -264,10 +271,10 @@ describe('Deferred', function() {
 		};
 
 		describe('functions', function() {
-			beforeEach(function (){ 
+			beforeEach(function() {
 				counter = 0;
 			});
-			
+
 			it('should run a single function.', function(done) {
 				Deferred.when(completionFunction(done, 0));
 			});
@@ -277,11 +284,11 @@ describe('Deferred', function() {
 			});
 		});
 
-		describe('mixed', function () {
-			beforeEach(function (){ 
+		describe('mixed', function() {
+			beforeEach(function() {
 				counter = 0;
 			});
-			
+
 			it('should chain multiple functions and deferreds, ending with a deferred.', function(done) {
 				Deferred.when(
 					chainedDeferred,
