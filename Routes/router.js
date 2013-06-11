@@ -90,7 +90,7 @@ module.exports = (function () {
             data = ComplexObjectParser.parse(data);
 
             if (!data || data._isStatic) {
-                return staticResourceHandler.serve(req, res, req.url);
+                return staticResourceHandler(req, res, req.url);
             }
 
             data._method = req.method;
