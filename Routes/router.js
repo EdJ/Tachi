@@ -5,11 +5,10 @@ var compressionHandler = require('../Utilities/compressionHandler');
 module.exports = (function () {
     return function Router(routes, statics, settings) {
         var RouteParser = require(settings.routeParser || './routeParser');
-        var StaticResourceHandler = require(settings.staticResourceHandler || './staticResourceHandler');
+        var staticResourceHandler = require(settings.staticResourceHandler || './staticResourceHandler');
 
         var routeParser = new RouteParser(routes, statics);
-        var staticResourceHandler = new StaticResourceHandler();
-
+        
         var defaultUrl = settings.defaultRoute || '/';
         var defaultRoute = routeParser.parse(defaultUrl);
 
