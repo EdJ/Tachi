@@ -1,7 +1,7 @@
 var fs = require('fs');
 
 module.exports = (function() {
-	return function ResourceHeaderGenerator(appRoot, contentTypes, specifyCacheHeaders) {
+	return function ResourceHeaderGenerator(contentTypes, specifyCacheHeaders) {
 		var fileStats = {};
 
 		var setFileSpecificHeaders = function (existingHeaders, specifyCacheHeaders, lastModifiedTime) {
@@ -30,7 +30,7 @@ module.exports = (function() {
 
 			var stats = fileStats[path];
 			if (!stats) {
-				fs.stat(appRoot + path, function (err, stats) {
+				fs.stat(path, function (err, stats) {
 					if (err) {
 						deferred.complete(headers);
 						return;

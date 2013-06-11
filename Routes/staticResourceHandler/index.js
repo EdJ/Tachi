@@ -4,61 +4,72 @@ var ResourceHeaderGenerator = require('./resourceHeaderGenerator');
 var ContentTypes = require('../../Utilities/mime');
 var generateResourceHeaders = ResourceHeaderGenerator(AppRoot, ContentTypes, true);
 
-module.exports = function StaticResourceHandler() {
-    this.serve = function (request, resp) {
-        var deferred = new Deferred();
+var wasFileModified = function(requestHeaders, responseHeaders) {
+    var modifiedDate = requestHeaders['if-modified-since'];
+    var since = null;
+    if (modifiedDate) {
+        since = new Date(modifiedDate);
+    }
 
-        var path = request.url;
+    if (!since || since == 'Invalid Date') {
+        return true;
+    }
 
-        var spl = path.split('.');
-        var ext = spl[spl.length - 1];
-        if (!ContentTypes[ext]) {
-            deferred.complete(false);
+    var wasModified = true;
+
+    if (responseHeaders['Last-Modified']) {
+        var modified = responseHeaders['Last-Modified'];
+        var lastModified = new Date(modified);
+        wasModified = lastModified != 'Invalid Date' && lastModified > since;
+    }
+
+    return wasModified;
+};
+
+module.exports = function StaticResourceHandler(request, resp) {
+    var deferred = new Deferred();
+
+    var path = request.url;
+
+    var spl = path.split('.');
+    var ext = spl[spl.length - 1];
+    if (!ContentTypes[ext]) {
+        deferred.complete(false);
+        return deferred;
+    }
+
+    var filePath = AppRoot + path;
+
+    generateResourceHeaders(filePath, ext)
+        .onComplete(function(responseHeaders) {
+
+        var wasModified = wasFileModified(request.headers, responseHeaders);
+
+        if (!wasModified) {
+            resp.writeHead(304, responseHeaders);
+            deferred.complete(true);
             return deferred;
         }
 
-        var modifiedDate = request.headers['if-modified-since'];
-        var since = null;
-        if (modifiedDate) {
-            since = new Date(modifiedDate);
-        }
+        fs.readFile(filePath, function(fileErr, fileData) {
+            if (!fileErr) {
+                var toCompress = {
+                    toCompress: fileData,
+                    headers: responseHeaders,
+                    contentType: ContentTypes[ext]
+                };
 
-        var headersDeferred = generateResourceHeaders(path, ext);
-        headersDeferred.onComplete(function (headers) {
-            var wasModified = true;
+                compressionHandler(request, resp, toCompress)
+                    .onComplete(function() {
+                    deferred.complete(true);
+                });
+            } else {
+                Logger.log(fileErr);
 
-            if (headers['Last-Modified'] && since) {
-                var modified = headers['Last-Modified'];
-                var lastModified = new Date(modified);
-                wasModified = lastModified > since;
+                deferred.complete(false);
             }
-
-            if (!wasModified) {
-                resp.writeHead(304, headers);
-                deferred.complete(true);
-                return deferred;
-            }
-
-            fs.readFile(AppRoot + path, function (fileErr, fileData) {
-                if (!fileErr) {
-                    var toCompress = {
-                        toCompress: fileData,
-                        headers: headers,
-                        contentType: ContentTypes[ext]
-                    };
-
-                    compressionHandler(request, resp, toCompress)
-                    .onComplete(function () {
-                        deferred.complete(true);
-                    });
-                } else {
-                    Logger.log(fileErr);
-
-                    deferred.complete(false);
-                }
-            });
         });
+    });
 
-        return deferred;
-    };
+    return deferred;
 };

@@ -21,7 +21,7 @@ describe('resourceHeaderGenerator', function() {
 		});
 
 		// Don't specify the cache headers.
-		var generateContentHeaders = ResourceHeaderGenerator('./', contentTypes, false);
+		var generateContentHeaders = ResourceHeaderGenerator(contentTypes, false);
 
 		var deferred = generateContentHeaders('test.test', 'test');
 
@@ -50,7 +50,7 @@ describe('resourceHeaderGenerator', function() {
 		});
 
 		// Don't specify the cache headers.
-		var generateContentHeaders = ResourceHeaderGenerator('./', contentTypes, false);
+		var generateContentHeaders = ResourceHeaderGenerator(contentTypes, false);
 
 		var deferred = generateContentHeaders('test.test', 'test');
 
@@ -79,7 +79,7 @@ describe('resourceHeaderGenerator', function() {
 		});
 
 		// Don't specify the cache headers.
-		var generateContentHeaders = ResourceHeaderGenerator('./', contentTypes, false);
+		var generateContentHeaders = ResourceHeaderGenerator(contentTypes, false);
 
 		var deferred = generateContentHeaders('test.test', 'test');
 
@@ -118,7 +118,7 @@ describe('resourceHeaderGenerator', function() {
 		};
 
 		// Don't specify the cache headers.
-		var generateContentHeaders = ResourceHeaderGenerator('./', contentTypes, true);
+		var generateContentHeaders = ResourceHeaderGenerator(contentTypes, true);
 
 		var deferred = generateContentHeaders('test.test', 'test');
 
