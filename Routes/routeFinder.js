@@ -35,32 +35,34 @@ module.exports = (function() {
 		}
 
 		return bestMatch;
-	};	
+	};
 
-    var getUrl = function (bestMatch, params) {
-        var qs = [];
+	var getUrl = function(bestMatch, params) {
+		var qs = [];
 
-        for (var key in params) {
-            var toMatch = '{' + key + '}';
-            if (!bestMatch.match(toMatch)) {
-                qs.push(key + '=' + encodeURIComponent(params[key]));
-            } else {
-                bestMatch = bestMatch.replace(toMatch, params[key]);
-            }
-        }
+		for (var key in params) {
+			var toMatch = '{' + key + '}';
+			if (!bestMatch.match(toMatch)) {
+				qs.push(key + '=' + encodeURIComponent(params[key]));
+			} else {
+				bestMatch = bestMatch.replace(toMatch, params[key]);
+			}
+		}
 
-        var qsString = '';
+		var qsString = '';
 
-        if (qs.length) {
-            qsString = '?' + qs.join('&');
-        }
+		if (qs.length) {
+			qsString = '?' + qs.join('&');
+		}
 
-        return bestMatch + qsString;
-    };
+		return bestMatch + qsString;
+	};
 
-	var RouteFinder = function RouteFinder(routes, params) {
-		var bestMatch = findBestMatchingRoute(routes, params);
-		return getUrl(bestMatch, params);
+	var RouteFinder = function RouteFinder(routes) {
+		return function(params) {
+			var bestMatch = findBestMatchingRoute(routes, params);
+			return getUrl(bestMatch, params);
+		};
 	};
 
 	// Expose a couple of methods for unit testing.

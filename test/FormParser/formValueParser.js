@@ -1,5 +1,5 @@
 var assert = require('should');
-var FormValueParser = require('../../FormParsing/formValueParser');
+var FormValueParser = require('../../FormParser/formValueParser');
 
 describe('FormValueParser', function () {
 	describe('#parseDate()', function () {

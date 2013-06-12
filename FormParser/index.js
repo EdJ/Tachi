@@ -1,18 +1,6 @@
 var FormValueParser = require('./formValueParser');
 
 module.exports = (function () {
-    var formValueParser = new FormValueParser();
-
-    var parseComplexObject = function (toParse) {
-        var output = {};
-
-        for (var segment in toParse) {
-            parseComplexObjectPart(segment, toParse[segment], output);
-        }
-
-        return output;
-    };
-
     var parseComplexObjectPart = function (name, value, addTo) {
         var parts = name.split('[').join('.').split(']').join('').split('.');
         var current = addTo;
@@ -49,8 +37,16 @@ module.exports = (function () {
 
         current[parts[parts.length - 1]] = value;
     };
+    
+    var formValueParser = new FormValueParser();
 
-    return function ComplexObjectParser() {
-        this.parse = parseComplexObject;
+    return function FormDataParser(toParse) {
+        var output = {};
+
+        for (var segment in toParse) {
+            parseComplexObjectPart(segment, toParse[segment], output);
+        }
+
+        return output;
     };
 })();

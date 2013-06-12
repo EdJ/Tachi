@@ -13,8 +13,7 @@ module.exports = function (settings) {
     AppRoot = settings.appRoot;
 
     // TODO: This syntax is not ideal...
-    var complexObjectParser = require('tachi/FormParsing/complexObjectParser');
-    ComplexObjectParser = new complexObjectParser();
+    ComplexObjectParser = require('tachi/FormParser');
     
     Deferred = require('tachi/Async/deferred');
     AuthHandler = require('tachi/Auth/authHandler');

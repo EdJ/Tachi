@@ -1,7 +1,7 @@
 describe('routeHandler', function() {
 	var routeParser;
 	beforeEach(function() {
-		routeParser = require('../../../Routes/routeHandler/routeParser');
+		routeParser = require('../../Routes/routeParser');
 	});
 
 	describe('#getParameters()', function() {

@@ -151,7 +151,8 @@ describe('UrlParser', function() {
 
 	describe('public interface', function() {
 		it('should return an object with only the _isStatic property if the URL matches a static path.', function() {
-			var path = urlParser([], ['/test'], '/test/test.html');
+			var parseUrl = urlParser([], ['/test']);
+			var path = parseUrl('/test/test.html');
 
 			path.should.eql({
 				_isStatic: true
@@ -159,7 +160,7 @@ describe('UrlParser', function() {
 		});
 
 		it('should ignore matching routes if a static path is available.', function() {
-			var path = urlParser([{
+			var parseUrl = urlParser([{
 					func: function() {
 						return {};
 					},
@@ -167,7 +168,9 @@ describe('UrlParser', function() {
 						test: 'data'
 					}
 				}
-			], ['/test'], '/test/test.html');
+			], ['/test']);
+
+			var path = parseUrl('/test/test.html');
 
 			path.should.eql({
 				_isStatic: true
@@ -175,7 +178,7 @@ describe('UrlParser', function() {
 		});
 
 		it('should use a route if no static path matches.', function() {
-			var path = urlParser([{
+			var parseUrl = urlParser([{
 					func: function() {
 						return {};
 					},
@@ -183,7 +186,9 @@ describe('UrlParser', function() {
 						test: 'data'
 					}
 				}
-			], ['/Content'], '/test/test.html');
+			], ['/Content']);
+			
+			var path = parseUrl('/test/test.html');
 
 			path.should.eql({
 				test: 'data',

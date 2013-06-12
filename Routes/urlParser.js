@@ -1,12 +1,12 @@
 var qs = require('querystring');
 
 module.exports = (function() {
-    var isStaticUrl = function (statics, pathWithQueryString) {
-        if (! ~pathWithQueryString.indexOf('.') || !! ~pathWithQueryString.indexOf('?')) {
+    var isStaticUrl = function(statics, pathWithQueryString) {
+        if (!~pathWithQueryString.indexOf('.') || !! ~pathWithQueryString.indexOf('?')) {
             return false;
         }
 
-        for (var i = statics.length; i--; ) {
+        for (var i = statics.length; i--;) {
             var st = pathWithQueryString.indexOf(statics[i]);
             if (!st) {
                 return true;
@@ -16,7 +16,7 @@ module.exports = (function() {
         return false;
     };
 
-    var parseParameters = function (patterns, pathWithQs) {
+    var parseParameters = function(patterns, pathWithQs) {
         var split = pathWithQs.split('?');
         if (!split.length) {
             return {};
@@ -32,11 +32,10 @@ module.exports = (function() {
         var pattern;
         var output;
 
-        for (var i = patterns.length; i--; ) {
+        for (var i = patterns.length; i--;) {
             pattern = patterns[i];
-            fn = pattern.func;
 
-            output = fn(path);
+            output = pattern.func(path);
             if (!output) {
                 continue;
             }
@@ -51,15 +50,17 @@ module.exports = (function() {
         return {};
     };
 
-    var UrlParser = function (routes, statics, pathWithQueryString) {
-        var isStatic = isStaticUrl(statics, pathWithQueryString);
-        if (isStatic) {
-            return {
-                _isStatic: true
-            };
-        }
+    var UrlParser = function(routes, statics, pathWithQueryString) {
+        return function(pathWithQueryString) {
+            var isStatic = isStaticUrl(statics, pathWithQueryString);
+            if (isStatic) {
+                return {
+                    _isStatic: true
+                };
+            }
 
-        return parseParameters(routes, pathWithQueryString);
+            return parseParameters(routes, pathWithQueryString);
+        };
     };
 
     // Expose some functions for unit testing.
