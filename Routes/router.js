@@ -41,7 +41,17 @@ module.exports = (function() {
                 .onComplete(function(requestData) {
                 if (requestData._isStatic) {
                     staticResourceHandler(request, response)
-                        .onComplete(deferred.complete);
+                        .onComplete(function(output) {
+                        if (!output || output._unmodified) {
+                            deferred.complete(output);
+                            return;
+                        }
+
+                        compressionHandler(request, response, output)
+                            .onComplete(function() {
+                            deferred.complete(true);
+                        });
+                    });
                     return;
                 }
 

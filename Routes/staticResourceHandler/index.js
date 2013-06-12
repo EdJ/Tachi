@@ -26,7 +26,7 @@ var wasFileModified = function(requestHeaders, responseHeaders) {
     return wasModified;
 };
 
-module.exports = function StaticResourceHandler(request, resp) {
+module.exports = function StaticResourceHandler(request, response) {
     var deferred = new Deferred();
 
     var path = request.url;
@@ -46,8 +46,11 @@ module.exports = function StaticResourceHandler(request, resp) {
         var wasModified = wasFileModified(request.headers, responseHeaders);
 
         if (!wasModified) {
-            resp.writeHead(304, responseHeaders);
-            deferred.complete(true);
+            response.writeHead(304, responseHeaders);
+            deferred.complete({
+                _unmodified: true
+            });
+
             return deferred;
         }
 
@@ -59,10 +62,7 @@ module.exports = function StaticResourceHandler(request, resp) {
                     contentType: ContentTypes[ext]
                 };
 
-                compressionHandler(request, resp, toCompress)
-                    .onComplete(function() {
-                    deferred.complete(true);
-                });
+                deferred.complete(toCompress);
             } else {
                 Logger.log(fileErr);
 

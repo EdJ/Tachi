@@ -87,7 +87,10 @@ describe('staticResourceHandler', function() {
 		});
 
 		resultDeferred.onComplete(function(result) {
-			result.should.be.true;
+			result.should.eql({
+				_unmodified: true
+			});
+
 			responseHeaders.should.equal(headersToReturn);
 			responseCode.should.equal(304);
 
@@ -110,7 +113,7 @@ describe('staticResourceHandler', function() {
 			},
 			'./resourceHeaderGenerator': getResourceHeaderGenerator(headersToReturn),
 			'fs': {
-				readFile: function (path, callback) {
+				readFile: function(path, callback) {
 					callback('ERROR!', null);
 				}
 			}
@@ -145,12 +148,12 @@ describe('staticResourceHandler', function() {
 			},
 			'./resourceHeaderGenerator': getResourceHeaderGenerator(headersToReturn),
 			'fs': {
-				readFile: function (path, callback) {
+				readFile: function(path, callback) {
 					callback(null, 'File data.');
 				}
 			},
-			'../../Utilities/compressionHandler': function () {
-				var deferred =  new Deferred();
+			'../../Utilities/compressionHandler': function() {
+				var deferred = new Deferred();
 
 				deferred.complete();
 
@@ -166,7 +169,11 @@ describe('staticResourceHandler', function() {
 		}, {});
 
 		resultDeferred.onComplete(function(result) {
-			result.should.be.true;
+			result.should.eql({
+                    toCompress: 'File data.',
+                    headers: headersToReturn,
+                    contentType: 'text/html'
+			});
 
 			done();
 		});
