@@ -121,4 +121,40 @@ describe('routeHandler', function() {
 			});
 		});
 	});
+
+	describe('public interface', function() {
+		it('should parse a route that is provided as a string.', function() {
+			var result = routeParser('/{test}/');
+
+			result.should.have.property('func');
+			result.data.should.eql({});
+			result._parameters.should.eql(['test']);
+		});
+
+		it('should parse a route that is provided as an object.', function() {
+			var result = routeParser({
+				url: '/{test}/'
+			});
+
+			result.should.have.property('func');
+			result.data.should.eql({});
+			result._parameters.should.eql(['test']);
+		});
+
+		it('should return any passed data as pre-set data.', function() {
+			var result = routeParser({
+				url: '/{test}/',
+				data: {
+					testData: 'test'
+				}
+			});
+
+			result.should.have.property('func');
+			result.data.should.eql({
+				testData: 'test'
+			});
+			
+			result._parameters.should.eql(['test']);
+		});
+	});
 });
