@@ -1,10 +1,10 @@
-﻿module.exports = (function () {
+﻿module.exports = (function() {
     function Deferred() {
         var stack = [];
         var outputData = {};
         var hasCompleted = false;
 
-        this.onComplete = function (callback) {
+        this.onComplete = function(callback) {
             if (hasCompleted) {
                 initiateCallback(callback);
                 return this;
@@ -15,13 +15,13 @@
             return this;
         };
 
-        var initiateCallback = function (callback) {
-            process.nextTick(function () {
+        var initiateCallback = function(callback) {
+            process.nextTick(function() {
                 callback(outputData);
             });
         };
 
-        this.complete = function (data) {
+        this.complete = function(data) {
             if (hasCompleted) {
                 return this;
             }
@@ -37,23 +37,28 @@
             return this;
         };
 
-        this.isComplete = function () {
+        this.isComplete = function() {
             return hasCompleted;
         };
     };
 
-    Deferred.chain = function () {
+    Deferred.chain = function(functions) {
         if (!arguments.length) {
+            return;
+        }
+        
+        if (!(functions instanceof Array)) {
+            var newFunctions = Array.prototype.slice.call(arguments, 0, arguments.length );
+            Deferred.chain(newFunctions);
             return;
         }
 
         var currentCallback = 0;
-        var chainedFunctions = arguments;
 
-        var callFunc = function (fromLast) {
+        var callFunc = function(fromLast) {
             currentCallback++;
 
-            var next = chainedFunctions[currentCallback - 1];
+            var next = functions[currentCallback - 1];
 
             if (!next) {
                 return;
@@ -64,14 +69,14 @@
                 possibleDeferred.onComplete(nextFunc);
             }
         };
-   
-        var nextFunc = function (fromLast) {
+
+        var nextFunc = function(fromLast) {
             if (fromLast instanceof Deferred) {
                 fromLast.onComplete(nextFunc);
                 return;
             };
 
-            process.nextTick(function () {
+            process.nextTick(function() {
                 callFunc(fromLast);
             });
         };
@@ -80,23 +85,27 @@
 
     };
 
-    Deferred.when = function () {
-        var callback = arguments[arguments.length - 1];
-
-        if (arguments.length == 1) {
-            callback();
+    Deferred.when = function(functions, callback) {
+        if (arguments.length == 1 && functions) {
+            functions();
+        }
+        
+        if (!(functions instanceof Array)) {
+            var newFunctions = Array.prototype.slice.call(arguments, 0, arguments.length - 1);
+            var newCallback = arguments[arguments.length - 1];
+            return Deferred.when(newFunctions, newCallback);
         }
 
         var count = 0;
-        var completionFunction = function () {
+        var completionFunction = function() {
             count--;
             if (!count) {
                 process.nextTick(callback);
             }
         };
 
-        for (var i = arguments.length - 1; i--; ) {
-            var deferred = arguments[i];
+        for (var i = functions.length; i--;) {
+            var deferred = functions[i];
 
             if (deferred instanceof Function) {
                 deferred = deferred(completionFunction);

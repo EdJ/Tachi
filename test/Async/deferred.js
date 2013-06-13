@@ -168,6 +168,10 @@ describe('Deferred', function() {
 			it('should chain multiple deferreds.', function(done) {
 				Deferred.chain(chainedDeferred, chainedDeferred, completionDeferred(done, 2));
 			});
+
+			it('should chain multiple deferreds when passed as an array.', function(done) {
+				Deferred.chain([chainedDeferred, chainedDeferred, completionDeferred(done, 2)]);
+			});
 		});
 
 		var chainedFunction = function(counter, next) {
@@ -253,6 +257,10 @@ describe('Deferred', function() {
 
 			it('should chain multiple deferreds.', function(done) {
 				Deferred.when(chainedDeferred, chainedDeferred, completionDeferred(done, 2));
+			});
+
+			it('should chain multiple deferreds passed as an array.', function(done) {
+				Deferred.when([chainedDeferred, chainedDeferred], completionDeferred(done, 2));
 			});
 		});
 
