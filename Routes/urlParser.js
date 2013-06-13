@@ -32,7 +32,7 @@ module.exports = (function() {
         var pattern;
         var output;
 
-        for (var i = patterns.length; i--;) {
+        for (var i = 0, l = patterns.length; i < l; i++) {
             pattern = patterns[i];
 
             output = pattern.func(path);

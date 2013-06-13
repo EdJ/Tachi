@@ -187,7 +187,36 @@ describe('UrlParser', function() {
 					}
 				}
 			], ['/Content']);
-			
+
+			var path = parseUrl('/test/test.html');
+
+			path.should.eql({
+				test: 'data',
+				_isStatic: false
+			});
+		});
+
+		it('should check the routes in order.', function() {
+			var parseUrl = urlParser([{
+					func: function() {
+						return {};
+					},
+					data: {
+						test: 'data'
+					}
+				}, {
+
+					func: function() {
+						return {
+							wrongData: true
+						}
+					},
+					data: {
+						nope: 'not this one.'
+					}
+				}
+			], ['/Content']);
+
 			var path = parseUrl('/test/test.html');
 
 			path.should.eql({
