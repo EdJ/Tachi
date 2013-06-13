@@ -65,7 +65,7 @@ module.exports = (function() {
                     }
 
                     if (output._redirect) {
-                        redirect(output._redirect, res);
+                        redirect(response, output._redirect);
                         deferred.complete(true);
                         return;
                     }
