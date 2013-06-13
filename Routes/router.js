@@ -70,6 +70,16 @@ module.exports = (function() {
                         return;
                     }
 
+                    if (output instanceof Deferred) {
+                        output.onComplete(function(outputData) {
+                            compressionHandler(request, response, outputData)
+                                .onComplete(function() {
+                                deferred.complete(true);
+                            });
+                        });
+                        return;
+                    }
+
                     compressionHandler(request, response, output)
                         .onComplete(function() {
                         deferred.complete(true);
