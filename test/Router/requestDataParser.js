@@ -15,7 +15,7 @@ describe('RequestDataParser', function() {
 
 		var requestDataParser = proxyquire('../../Router/requestDataParser',
 			{
-				'tachi/FormParser': parseFormData,
+				'../FormParser': parseFormData,
 				'./urlParser': function () { return parseUrl; }
 			});
 
@@ -50,7 +50,7 @@ describe('RequestDataParser', function() {
 
 		var requestDataParser = proxyquire('../../Router/requestDataParser',
 			{
-				'tachi/FormParser': parseFormData,
+				'../FormParser': parseFormData,
 				'./urlParser': function () { return parseUrl; }
 			});
 
@@ -88,7 +88,7 @@ describe('RequestDataParser', function() {
 
 		var requestDataParser = proxyquire('../../Router/requestDataParser',
 			{
-				'tachi/FormParser': parseFormData,
+				'../FormParser': parseFormData,
 				'./urlParser': function () { return parseUrl; }
 			});
 
@@ -145,7 +145,7 @@ describe('RequestDataParser', function() {
 
 		var requestDataParser = proxyquire('../../Router/requestDataParser',
 			{
-				'tachi/FormParser': parseFormData,
+				'../FormParser': parseFormData,
 				'./urlParser': function () { return parseUrl; }
 			});
 
@@ -203,7 +203,7 @@ describe('RequestDataParser', function() {
 
 		var requestDataParser = proxyquire('../../Router/requestDataParser',
 			{
-				'tachi/FormParser': parseFormData,
+				'../FormParser': parseFormData,
 				'./urlParser': function () { return parseUrl; }
 			});
 

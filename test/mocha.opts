@@ -1,3 +1,2 @@
  --recursive
- -R dot
- --bail
+ -R spec

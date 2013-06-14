@@ -1,5 +1,5 @@
 var qs = require('querystring');
-var parseFormData = require('tachi/FormParser');
+var parseFormData = require('../FormParser');
 var CreateUrlParser = require('./urlParser');
 
 module.exports = (function() {

@@ -1,4 +1,4 @@
-﻿var editorGenerator = require('tachi/Helpers/editorGenerator');
+﻿var editorGenerator = require('../Helpers/editorGenerator');
 
 module.exports = (function() {
     return function Html(baseController) {

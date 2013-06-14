@@ -1,4 +1,4 @@
-﻿var cookie = require('tachi/Utilities/cookie');
+﻿var cookie = require('../Utilities/cookie');
 
 AuthHandler = module.exports = (function () {
 
