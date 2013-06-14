@@ -1,9 +1,6 @@
-describe('RequestDataParser', function() {
-	var requestDataParser;
-	beforeEach(function() {
-		requestDataParser = require('../../Routes/requestDataParser');
-	});
+var proxyquire = require('proxyquire');
 
+describe('RequestDataParser', function() {
 	it('should return an object with only the _isStatic property for a static URL.', function(done) {
 
 		var parseUrl = function() {
@@ -16,7 +13,13 @@ describe('RequestDataParser', function() {
 			return data;
 		};
 
-		var parseDataFunction = requestDataParser(parseUrl, parseFormData);
+		var requestDataParser = proxyquire('../../Router/requestDataParser',
+			{
+				'tachi/FormParser': parseFormData,
+				'./urlParser': function () { return parseUrl; }
+			});
+
+		var parseDataFunction = requestDataParser({});
 
 		var deferred = parseDataFunction({
 			url: '/test'
@@ -45,7 +48,13 @@ describe('RequestDataParser', function() {
 			return data;
 		};
 
-		var parseDataFunction = requestDataParser(parseUrl, parseFormData);
+		var requestDataParser = proxyquire('../../Router/requestDataParser',
+			{
+				'tachi/FormParser': parseFormData,
+				'./urlParser': function () { return parseUrl; }
+			});
+
+		var parseDataFunction = requestDataParser({});
 
 		var deferred = parseDataFunction({
 			url: '/test'
@@ -77,7 +86,13 @@ describe('RequestDataParser', function() {
 			return data;
 		};
 
-		var parseDataFunction = requestDataParser(parseUrl, parseFormData);
+		var requestDataParser = proxyquire('../../Router/requestDataParser',
+			{
+				'tachi/FormParser': parseFormData,
+				'./urlParser': function () { return parseUrl; }
+			});
+
+		var parseDataFunction = requestDataParser({});
 
 		var requestDataCallback;
 		var requestEndCallback;
@@ -128,7 +143,13 @@ describe('RequestDataParser', function() {
 			return data;
 		};
 
-		var parseDataFunction = requestDataParser(parseUrl, parseFormData);
+		var requestDataParser = proxyquire('../../Router/requestDataParser',
+			{
+				'tachi/FormParser': parseFormData,
+				'./urlParser': function () { return parseUrl; }
+			});
+
+		var parseDataFunction = requestDataParser({});
 
 		var requestDataCallback;
 		var requestEndCallback;
@@ -180,7 +201,13 @@ describe('RequestDataParser', function() {
 			return data;
 		};
 
-		var parseDataFunction = requestDataParser(parseUrl, parseFormData);
+		var requestDataParser = proxyquire('../../Router/requestDataParser',
+			{
+				'tachi/FormParser': parseFormData,
+				'./urlParser': function () { return parseUrl; }
+			});
+
+		var parseDataFunction = requestDataParser({});
 
 		var requestDataCallback;
 		var requestEndCallback;

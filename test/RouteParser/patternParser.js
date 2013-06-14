@@ -1,73 +1,73 @@
-describe('routeHandler', function() {
-	var routeParser;
+describe('patternParser', function() {
+	var patternParser;
 	beforeEach(function() {
-		routeParser = require('../../Routes/routeParser');
+		patternParser = require('../../RouteParser/patternParser');
 	});
 
 	describe('#getParameters()', function() {
 		it('should return no parameters from a blank route.', function() {
-			var parameters = routeParser.getParameters('/');
+			var parameters = patternParser.getParameters('/');
 
 			parameters.should.eql([]);
 		});
 
 		it('should return no parameters from no route.', function() {
-			var parameters = routeParser.getParameters('');
+			var parameters = patternParser.getParameters('');
 
 			parameters.should.eql([]);
 		});
 
 		it('should return no parameters from a non-parameterised route.', function() {
-			var parameters = routeParser.getParameters('/test');
+			var parameters = patternParser.getParameters('/test');
 
 			parameters.should.eql([]);
 		});
 
 		it('should split a single parameter from a simple route.', function() {
-			var parameters = routeParser.getParameters('/{test}');
+			var parameters = patternParser.getParameters('/{test}');
 
 			parameters.should.eql(['test']);
 		});
 
 		it('should split a single parameter from a simple route that ends with a /.', function() {
-			var parameters = routeParser.getParameters('/{test}/');
+			var parameters = patternParser.getParameters('/{test}/');
 
 			parameters.should.eql(['test']);
 		});
 
 		it('should split a single parameter from a simple route with a constant.', function() {
-			var parameters = routeParser.getParameters('/{test}-something');
+			var parameters = patternParser.getParameters('/{test}-something');
 
 			parameters.should.eql(['test']);
 		});
 
 		it('should split multiple parameters from a complex route.', function() {
-			var parameters = routeParser.getParameters('/{test}/{test2}/');
+			var parameters = patternParser.getParameters('/{test}/{test2}/');
 
 			parameters.should.eql(['test', 'test2']);
 		});
 
 		it('should split multiple parameters from a complex route with a constant.', function() {
-			var parameters = routeParser.getParameters('/{test}-test/test2-{test2}/test3');
+			var parameters = patternParser.getParameters('/{test}-test/test2-{test2}/test3');
 
 			parameters.should.eql(['test', 'test2']);
 		});
 
 		it('should not grab parameters from a route without closed brackets.', function() {
-			var parameters = routeParser.getParameters('/{test');
+			var parameters = patternParser.getParameters('/{test');
 
 			parameters.should.eql([]);
 		});
 
 		it('should be greedy when parsing mis-matched brackets.', function() {
-			var parameters = routeParser.getParameters('/{test/{test2}/');
+			var parameters = patternParser.getParameters('/{test/{test2}/');
 
 			parameters.should.eql(['test/{test2']);
 		});
 
 		it('should allow multiple parameters to be named the same.', function() {
 			// This case is useless, but not prevented.
-			var parameters = routeParser.getParameters('/{test}/{test}/');
+			var parameters = patternParser.getParameters('/{test}/{test}/');
 
 			parameters.should.eql(['test', 'test']);
 		});
@@ -90,7 +90,7 @@ describe('routeHandler', function() {
 			TestCase('/{test}/{test2}/', '/no-pe/'),
 		].forEach(function(testCase) {
 			it('should return false when a route doesn\'t match the URL. (' + testCase.pattern + ', ' + testCase.url + ')', function() {
-				var parseFunction = routeParser.generateParseFunction(testCase.pattern);
+				var parseFunction = patternParser.generateParseFunction(testCase.pattern);
 				var parameters = parseFunction(testCase.url);
 
 				parameters.should.eql(false);
@@ -114,7 +114,7 @@ describe('routeHandler', function() {
 			})
 		].forEach(function(testCase) {
 			it('should return a function that resolves the expected parameters. (' + testCase.pattern + ', ' + testCase.url + ')', function() {
-				var parseFunction = routeParser.generateParseFunction(testCase.pattern);
+				var parseFunction = patternParser.generateParseFunction(testCase.pattern);
 				var parameters = parseFunction(testCase.url);
 
 				parameters.should.eql(testCase.expectedResult);
@@ -124,7 +124,7 @@ describe('routeHandler', function() {
 
 	describe('public interface', function() {
 		it('should parse a route that is provided as a string.', function() {
-			var result = routeParser('/{test}/');
+			var result = patternParser('/{test}/');
 
 			result.should.have.property('func');
 			result.data.should.eql({});
@@ -132,7 +132,7 @@ describe('routeHandler', function() {
 		});
 
 		it('should parse a route that is provided as an object.', function() {
-			var result = routeParser({
+			var result = patternParser({
 				url: '/{test}/'
 			});
 
@@ -142,7 +142,7 @@ describe('routeHandler', function() {
 		});
 
 		it('should return any passed data as pre-set data.', function() {
-			var result = routeParser({
+			var result = patternParser({
 				url: '/{test}/',
 				data: {
 					testData: 'test'

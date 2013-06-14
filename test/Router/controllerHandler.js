@@ -1,35 +1,10 @@
 var proxyquire = require('proxyquire');
 
 describe('ControllerHandler', function() {
-	var controllerHandlerPath = '../../Routes/controllerHandler';
+	var controllerHandlerPath = '../../Router/controllerHandler';
 	var controllerHandler;
 	beforeEach(function() {
 		controllerHandler = require(controllerHandlerPath);
-	});
-
-	describe('#redirect()', function() {
-		it('should set the redirect headers and end the response.', function() {
-			var responseHeaders;
-			var responseCode;
-			var responseWasEnded;
-			var response = {
-				writeHead: function(code, headers) {
-					responseCode = code;
-					responseHeaders = headers;
-				},
-				end: function() {
-					responseWasEnded = true;
-				}
-			};
-
-			controllerHandler.redirect(response, '/test');
-
-			responseHeaders.should.have.property('Location');
-			responseHeaders.Location.should.equal('/test');
-
-			responseCode.should.equal(302);
-			responseWasEnded.should.be.true;
-		});
 	});
 
 	describe('#getAction()', function() {

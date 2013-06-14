@@ -1,7 +1,7 @@
 describe('RouteFinder', function() {
 	var routeFinder;
 	beforeEach(function() {
-		routeFinder = require('../../Routes/routeFinder');
+		routeFinder = require('../../RouteFinder');
 	});
 
 	describe('#findBestMatchingRoute()', function() {
@@ -180,17 +180,19 @@ describe('RouteFinder', function() {
 
 	describe('public interface', function() {
 		it('should parse a route to the expected URL.', function() {
-			var routeFinderFunction = routeFinder([{
-					url: '/{something}/{test}/',
-					_parameters: ['something', 'test']
-				}, {
-					url: '/{something}/{controller}/{action}/{test}/',
-					_parameters: ['something', 'controller', 'action', 'test']
-				}, {
-					url: '/{controller}/{action}/{test}/',
-					_parameters: ['controller', 'action', 'test']
-				}
-			]);
+			var routeFinderFunction = routeFinder({
+				routes: [{
+						url: '/{something}/{test}/',
+						_parameters: ['something', 'test']
+					}, {
+						url: '/{something}/{controller}/{action}/{test}/',
+						_parameters: ['something', 'controller', 'action', 'test']
+					}, {
+						url: '/{controller}/{action}/{test}/',
+						_parameters: ['controller', 'action', 'test']
+					}
+				]
+			});
 
 			var url = routeFinderFunction({
 				controller: 'test',

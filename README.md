@@ -27,7 +27,7 @@ index.js:
 ```js
 	var TachiHandler = require('Tachi');
 
-	var routes = {
+	var routeData = {
 		routes: [
 			{
 				url: '/',
@@ -35,18 +35,16 @@ index.js:
 				controller: 'DefaultController',
 				action: 'index'
 			}
-	  	}
+	  	},
+	    defaultRoute: '/'
 	  ]
 	};
 
 	var settings = {
-	    logger: 'tachi/Logging/consoleLogger',
-	    defaultRoute: '/Error?errorCode=404',
-	    appRoot: __dirname,
 	    port: 8080
 	};
 
-	var handler = new TachiHandler(settings, routes);
+	var handler = new TachiHandler(settings, routeData);
 	handler.start();
 ```
 
@@ -54,7 +52,7 @@ index.js:
 
 * Solid, understandable routing
 * Familiar MVC model (View(), RedirectToAction(), etc.)
-* Simple, fast templating engine.
+* Simple, fast templating engine
 * Minimal work required to quickly build complex web apps
 
 ## License

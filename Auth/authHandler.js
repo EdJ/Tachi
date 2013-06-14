@@ -1,4 +1,6 @@
-﻿AuthHandler = module.exports = (function () {
+﻿var cookie = require('tachi/Utilities/cookie');
+
+AuthHandler = module.exports = (function () {
 
     var authenticatedUsers = {};
 
@@ -11,7 +13,7 @@
             return false;
         }
 
-        var cookies = Cookie.get(req);
+        var cookies = cookie.get(req);
 
         var key = cookies[cookieKey];
 
@@ -51,10 +53,10 @@
 
         addAuthenticatedUser(key);
 
-        var cookie = {};
-        cookie[cookieKey] = key;
+        var newCookies = {};
+        newCookies[cookieKey] = key;
 
-        Cookie.set(res, cookie);
+        cookie.set(res, newCookies);
     };
 
     return {

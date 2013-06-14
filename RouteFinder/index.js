@@ -58,7 +58,9 @@ module.exports = (function() {
 		return bestMatch + qsString;
 	};
 
-	var RouteFinder = function RouteFinder(routes) {
+	var RouteFinder = function RouteFinder(routeData) {
+		var routes = routeData.routes;
+		
 		return function(params) {
 			var bestMatch = findBestMatchingRoute(routes, params);
 			return getUrl(bestMatch, params);

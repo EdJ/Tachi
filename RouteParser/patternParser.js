@@ -56,7 +56,7 @@ module.exports = (function() {
 		return new Function("str", outputFunction.join(''));
 	};
 
-	var RouteParser = function RouteParser(pattern) {
+	var PatternParser = function PatternParser(pattern) {
         if (!pattern.url) {
             pattern = {
                 url: pattern,
@@ -72,8 +72,8 @@ module.exports = (function() {
 	};
 
 	// Expose methods for test purposes.
-	RouteParser.getParameters = getParameters;
-	RouteParser.generateParseFunction = generateParseFunction;
+	PatternParser.getParameters = getParameters;
+	PatternParser.generateParseFunction = generateParseFunction;
 
-	return RouteParser;
+	return PatternParser;
 })();

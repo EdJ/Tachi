@@ -1,4 +1,4 @@
-﻿module.exports = function CookieParser() {
+﻿module.exports = new (function CookieParser() {
     this.get = function (req) {
         if (!req
          || !req.headers
@@ -33,4 +33,4 @@
             res.setHeader('Set-Cookie', key + '=' + cookie[key]);
         }
     };
-};
+})();

@@ -20,7 +20,7 @@ describe('staticResourceHandler', function() {
 	};
 
 	it('should do nothing for a missing content type.', function(done) {
-		var staticResourceHandler = proxyquire('../../../Routes/staticResourceHandler', {
+		var staticResourceHandler = proxyquire('../../../Router/staticResourceHandler', {
 			'../../Utilities/mime': {
 				html: 'text/html'
 			}
@@ -38,7 +38,7 @@ describe('staticResourceHandler', function() {
 	});
 
 	it('should do nothing for an unknown content type.', function(done) {
-		var staticResourceHandler = proxyquire('../../../Routes/staticResourceHandler', {
+		var staticResourceHandler = proxyquire('../../../Router/staticResourceHandler', {
 			'../../Utilities/mime': {
 				html: 'text/html'
 			}
@@ -64,7 +64,7 @@ describe('staticResourceHandler', function() {
 			'Last-Modified': modifiedTime
 		};
 
-		var staticResourceHandler = proxyquire('../../../Routes/staticResourceHandler', {
+		var staticResourceHandler = proxyquire('../../../Router/staticResourceHandler', {
 			'../../Utilities/mime': {
 				html: 'text/html'
 			},
@@ -107,7 +107,7 @@ describe('staticResourceHandler', function() {
 			'Last-Modified': modifiedTime
 		};
 
-		var staticResourceHandler = proxyquire('../../../Routes/staticResourceHandler', {
+		var staticResourceHandler = proxyquire('../../../Router/staticResourceHandler', {
 			'../../Utilities/mime': {
 				html: 'text/html'
 			},
@@ -142,7 +142,7 @@ describe('staticResourceHandler', function() {
 			'Last-Modified': modifiedTime
 		};
 
-		var staticResourceHandler = proxyquire('../../../Routes/staticResourceHandler', {
+		var staticResourceHandler = proxyquire('../../../Router/staticResourceHandler', {
 			'../../Utilities/mime': {
 				html: 'text/html'
 			},

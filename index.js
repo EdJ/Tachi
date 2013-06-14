@@ -1,19 +1,37 @@
 ﻿var http = require('http');
+var compressionHandler = require('./Utilities/compressionHandler');
+var parseRoutes = require('./RouteParser');
+var RouteFinder = require('./RouteFinder');
+var ClassLoader = require('./classLoader');
+var BaseController = require('./baseController');
+var SetupGlobals = require('./setup.js');
 
-module.exports = (function () {
+module.exports = (function() {
     return function TachiHandler(settings, routes) {
-        (require('./setup.js'))(settings);
+        SetupGlobals(settings);
 
         Logger.log('Setup Complete.');
-        Router = new (require('tachi/Routes/router'))(routes.routes, routes.statics, settings);
 
-        var failedRequest = function (res) {
-            res.writeHead(404, { 'Content-Type': 'text/html; charset=UTF-8' });
+        var parsedRoutes = parseRoutes(routes);
+
+        var findRoute = new RouteFinder(parsedRoutes);
+        var baseController = new BaseController(findRoute);
+        var classLoader = new ClassLoader(baseController);
+
+        Html = require('tachi/Utilities/html')(baseController);
+
+        var Router = require('./Router');
+        var routeRequest = new Router(parsedRoutes, classLoader);
+
+        var failedRequest = function(res) {
+            res.writeHead(404, {
+                'Content-Type': 'text/html; charset=UTF-8'
+            });
+
             res.write('There was an error processing the request.');
-            res.end();
         };
 
-        var getClientIp = function (req) {
+        var getClientIp = function(req) {
             var ip = req.headers['x-forwarded-for'];
             if (!ip) {
                 ip = req.connection.remoteAddress;
@@ -22,18 +40,27 @@ module.exports = (function () {
             return ip;
         };
 
-        var server = http.createServer(function (req, res) {
+        var server = http.createServer(function(req, res) {
             var ip = getClientIp(req);
             var start = new Date();
             Logger.log('Incoming request from ' + ip + '. (' + req.url + ')');
 
             try {
-                var routerDeferred = Router.dispatch(req, res);
+                var routerDeferred = routeRequest(req, res);
 
-                routerDeferred.onComplete(function (success) {
-                    if (!success) {
+                routerDeferred.onComplete(function(output) {
+                    if (!output) {
                         Logger.log('Routing failed. (' + req.url + ')');
                         failedRequest(res);
+                    } else if (output !== true && !(output._unmodified || output._redirect)) {
+                        compressionHandler(req, res, output)
+                            .onComplete(function() {
+                            Logger.log('Response ended');
+                            Logger.log('Transaction Timing: ' + req.url + ' :: ' + (new Date() - start) + 'ms');
+                            res.end();
+                        });
+
+                        return;
                     }
 
                     Logger.log('Response ended');
@@ -43,24 +70,25 @@ module.exports = (function () {
             } catch (err) {
                 Logger.log('Response failed');
                 Logger.log(err);
+                Logger.log(err.stack);
                 failedRequest(res);
             }
         });
 
         var port = settings.port || 80;
 
-        var stopFunc = this.stop = function () {
+        var stopFunc = this.stop = function() {
             Logger.log('Closing Tachi server');
 
             server.close();
             Logger.log('Teardown complete.');
         };
 
-        this.start = function () {
+        this.start = function() {
             server.listen(port);
 
             // Needs replacing with something a little more robust. 
-            process.on('uncaughtException', function (err) {
+            process.on('uncaughtException', function(err) {
                 Logger.log('Unhandled exception occured: ');
 
                 if (err.message) {

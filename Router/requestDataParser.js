@@ -1,7 +1,11 @@
 var qs = require('querystring');
+var parseFormData = require('tachi/FormParser');
+var CreateUrlParser = require('./urlParser');
 
 module.exports = (function() {
-	return function RequestDataParser(parseUrl, parseFormData) {
+	return function RequestDataParser(routeData) {
+		var parseUrl = CreateUrlParser(routeData.routes, routeData.statics);
+
 		return function(request) {
 			var url = request.url;
 

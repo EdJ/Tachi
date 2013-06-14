@@ -16,7 +16,7 @@ describe('resourceHeaderGenerator', function() {
 			}
 		};
 
-		var ResourceHeaderGenerator = proxyquire('../../../Routes/staticResourceHandler/resourceHeaderGenerator', {
+		var ResourceHeaderGenerator = proxyquire('../../../Router/staticResourceHandler/resourceHeaderGenerator', {
 			fs: fs
 		});
 
@@ -45,7 +45,7 @@ describe('resourceHeaderGenerator', function() {
 
 		var expectedLastModifiedDate = new Date(modifiedTime).toString();
 
-		var ResourceHeaderGenerator = proxyquire('../../../Routes/staticResourceHandler/resourceHeaderGenerator', {
+		var ResourceHeaderGenerator = proxyquire('../../../Router/staticResourceHandler/resourceHeaderGenerator', {
 			fs: fs
 		});
 
@@ -74,7 +74,7 @@ describe('resourceHeaderGenerator', function() {
 
 		var expectedLastModifiedDate = new Date(modifiedTime).toString();
 
-		var ResourceHeaderGenerator = proxyquire('../../../Routes/staticResourceHandler/resourceHeaderGenerator', {
+		var ResourceHeaderGenerator = proxyquire('../../../Router/staticResourceHandler/resourceHeaderGenerator', {
 			fs: fs
 		});
 
@@ -103,7 +103,7 @@ describe('resourceHeaderGenerator', function() {
 			}
 		};
 
-		var ResourceHeaderGenerator = proxyquire('../../../Routes/staticResourceHandler/resourceHeaderGenerator', {
+		var ResourceHeaderGenerator = proxyquire('../../../Router/staticResourceHandler/resourceHeaderGenerator', {
 			fs: fs
 		});
 

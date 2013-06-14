@@ -1,14 +1,6 @@
 var authHandler = require('../Auth/authHandler');
 
 module.exports = (function() {
-	var redirect = function(response, location) {
-		response.writeHead(302, {
-			'Location': location
-		});
-
-		response.end();
-	};
-
 	var getAction = function(request, response, data, classLoader) {
 		var controller = classLoader.getController(data.controller || '', request, response);
 		if (!controller) {
@@ -89,7 +81,6 @@ module.exports = (function() {
 	};
 
 	// Expose some methods for unit testing.
-	ControllerHandler.redirect = redirect;
 	ControllerHandler.getAction = getAction;
 
 	return ControllerHandler;

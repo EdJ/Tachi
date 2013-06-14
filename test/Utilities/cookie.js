@@ -8,7 +8,7 @@ describe('CookieParser', function () {
 		[null, {}, 'test', 1, { headers: {} }, { headers: { cookie: 1 }}].forEach(function (testCase, i) {
 			it('should return an empty object when an invalid request is passed in. (' + JSON.stringify(testCase) + ')',
 				function () {
-					var cookieParser = new CookieParser();
+					var cookieParser = CookieParser;
 
 					cookieParser.get(testCase).should.eql({});
 				}
@@ -47,7 +47,7 @@ describe('CookieParser', function () {
 		].forEach(function (testCase, i) {
 			it('should populate an object with cookies when it matches. (' + JSON.stringify(testCase) + ')',
 				function () {
-					var cookieParser = new CookieParser();
+					var cookieParser = CookieParser;
 					var fakeRequest = { headers: { cookie: testCase.data }};
 
 					cookieParser.get(fakeRequest).should.eql(testCase.expected);
@@ -59,7 +59,7 @@ describe('CookieParser', function () {
 		[null, {}, 'test', 1, { headers: {} }, { headers: { cookie: 1 }}, { setHeader: 'test'}].forEach(function (testCase, i) {
 			it('should do nothing when an invalid response is passed in. (' + JSON.stringify(testCase) + ')',
 				function () {
-					var cookieParser = new CookieParser();
+					var cookieParser = CookieParser;
 
 					cookieParser.set(testCase, { testCookie: 'test'});
 				}
@@ -68,7 +68,7 @@ describe('CookieParser', function () {
 
 		it('should not set the Set-Cookie header for prototypal properties',
 			function () {
-				var cookieParser = new CookieParser();
+				var cookieParser = CookieParser;
 				var endData = [];
 
 				var response = {
@@ -93,7 +93,7 @@ describe('CookieParser', function () {
 
 		it('should set the Set-Cookie header if the response is valid',
 			function () {
-				var cookieParser = new CookieParser();
+				var cookieParser = CookieParser;
 				var endData = [];
 
 				var response = {
@@ -117,7 +117,7 @@ describe('CookieParser', function () {
 
 		it('should set multiple cookie headers if the response is valid',
 			function () {
-				var cookieParser = new CookieParser();
+				var cookieParser = CookieParser;
 				var endData = [];
 
 				var response = {

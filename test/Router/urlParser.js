@@ -4,7 +4,7 @@ Utils = require('../../Utilities/utils');
 describe('UrlParser', function() {
 	var urlParser;
 	beforeEach(function() {
-		urlParser = require('../../Routes/urlParser');
+		urlParser = require('../../Router/urlParser');
 	});
 
 	describe('isStaticUrl', function() {
