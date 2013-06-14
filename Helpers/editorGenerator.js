@@ -3,16 +3,27 @@ ViewLoader = new ViewLoader(__dirname + '/../InternalViews');
 
 var ViewParser = require('../Views/viewParser');
 
-module.exports = (function () {
-    var generateEditor = function (toGenerateFor, name, partName, originalObject, displaying) {
+module.exports = (function() {
+    var generateEditor = function(toGenerateFor, name, partName, originalObject, displaying) {
         displaying = displaying || false;
 
         partName = partName === undefined ? name : partName;
         var output = [];
+        var deferreds = [];
+        var stackDeferred = function() {
+            var index = output.length;
+            output.push('');
+
+            return function(result) {
+                output[index] = result;
+            }
+        };
+
         if (toGenerateFor instanceof Array) {
             for (var i = 0, l = toGenerateFor.length; i < l; i++) {
                 var part = generateEditor(toGenerateFor[i], name + '[' + i + ']', i, originalObject, displaying);
-                output.push(part);
+                part.onComplete(stackDeferred());
+                deferreds.push(part);
             }
         } else {
             var type = typeof toGenerateFor;
@@ -27,7 +38,9 @@ module.exports = (function () {
                     }
 
                     var part = generateEditor(toGenerateFor[prop], name + '.' + prop, prop, originalObject, displaying);
-                    output.push(part);
+
+                    part.onComplete(stackDeferred());
+                    deferreds.push(part);
                 }
             } else {
                 var additionalInfo = originalObject._additional || {};
@@ -52,19 +65,26 @@ module.exports = (function () {
                     label: partName
                 };
 
-                var html = parsedView.view(model);
-                output.push(html);
+                var part = parsedView.view(model);
+                part.onComplete(stackDeferred());
+                deferreds.push(part);
             }
         }
 
-        return output.join('');
+        var deferred = new Deferred();
+
+        Deferred.when(deferreds, function() {
+            deferred.complete(output.join(''));
+        });
+
+        return deferred;
     };
 
     return {
-        generateEditor: function (toGenerateFor, name, partName) {
+        generateEditor: function(toGenerateFor, name, partName) {
             return generateEditor(toGenerateFor, name, partName, toGenerateFor, false);
         },
-        generateDisplay: function (toGenerateFor, name, partName) {
+        generateDisplay: function(toGenerateFor, name, partName) {
             return generateEditor(toGenerateFor, name || '', partName, toGenerateFor, true);
         }
     };
