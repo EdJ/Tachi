@@ -1,4 +1,5 @@
 ## Tachi
+[![Build Status](https://secure.travis-ci.org/EdJ/Tachi.png?branch=master)](https://travis-ci.org/EdJ/Tachi)
 
 Node.js MVC framework for seriously rapid application development.
 
@@ -9,43 +10,44 @@ Quickly get up and running with a node.js MVC app, using a simple view syntax an
 Catch me on twitter (http://twitter.com/sigmoidfx) for more info!
 
 ## Quick Start
-
-	npm install tachi
+```bash
+npm install tachi
+```
 
 Grab a copy of the twitter bootstrap template for Tachi (http://github.com/EdJ/Tachi-bootstrap), or just use the following code:
 
 Controllers/DefaultController.js:
 ```js
-	module.exports = {
-		this.index = function () {
-			return this.Json({ message: 'Hi! Welcome to Tachi!'})
-		}
+module.exports = {
+	index: function () {
+		return this.Json({ message: 'Hi! Welcome to Tachi!'})
 	}
+}
 ```
 
 index.js:
 ```js
-	var TachiHandler = require('Tachi');
+var TachiHandler = require('Tachi');
 
-	var routeData = {
-		routes: [
-			{
-				url: '/',
-				data: {
+var routeData = {
+	routes: [
+		{
+			url: '/',
+			data: {
 				controller: 'DefaultController',
 				action: 'index'
 			}
-	  	},
-	    defaultRoute: '/'
-	  ]
-	};
+	  	}
+	],
+	defaultRoute: '/'
+};
 
-	var settings = {
-	    port: 8080
-	};
+var settings = {
+    port: 8080
+};
 
-	var handler = new TachiHandler(settings, routeData);
-	handler.start();
+var handler = new TachiHandler(settings, routeData);
+handler.start();
 ```
 
 ## Features
