@@ -16,11 +16,11 @@ module.exports = (function() {
 
 		var defaultRoute = parsePattern(unparsedRouteData.defaultUrl || '/');
 
-		var parsedRoutes = parseRoutes(unparsedRouteData.routes);
+		var parsedRoutes = parseRoutes(unparsedRouteData.routes || []);
 
 		return {
 			routes: parsedRoutes,
-			statics: unparsedRouteData.statics,
+			statics: unparsedRouteData.statics || [],
 			loginUrl: loginUrl,
 			defaultRoute: defaultRoute
 		};

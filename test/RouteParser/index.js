@@ -37,6 +37,27 @@ describe('RouteParser', function() {
 	});
 
 	describe('public interface', function() {
+		it('should return an uninitialised set of data if none specified.', function() {
+			var parseRouteData = proxyquire('../../RouteParser', {
+				'./patternParser': function(route) {
+					if (route === '/') {
+						return 'Default route.';
+					}
+
+					return null;
+				}
+			});
+
+			var result = parseRouteData({
+			});
+
+			result.should.eql({
+				routes: [],
+				loginUrl: '/Login',
+				defaultRoute: 'Default route.',
+				statics: []
+			});
+		});
 		it('should use the default URL of / if none is specified.', function() {
 			var parseRouteData = proxyquire('../../RouteParser', {
 				'./patternParser': function(route) {
