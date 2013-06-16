@@ -1,7 +1,9 @@
 var fs = require('fs');
 
 module.exports = function (connectionDetails) {
-    var baseDirectory = './' + connectionDetails.baseDirectory || 'data';
+    connectionDetails = connectionDetails || {};
+
+    var baseDirectory = './' + (connectionDetails.baseDirectory || 'data');
 
     var dataDirectoryExists = fs.existsSync(baseDirectory);
     if (!dataDirectoryExists) {
