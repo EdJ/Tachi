@@ -45,29 +45,43 @@ module.exports = (function() {
             } else {
                 var additionalInfo = originalObject._additional || {};
 
-                if ((additionalInfo[name] && additionalInfo[name].preventEditing) ||
-                    (additionalInfo[partName] && additionalInfo[partName].preventEditing)) {
-                    type = 'hidden';
-                }
-
-                var viewName = (displaying ? 'display/' : 'editor/') + type;
-                var view = ViewLoader.loadView(viewName);
-                if (!view) {
-                    viewName = displaying ? 'display/string' : 'editor/string';
-                    view = ViewLoader.loadView(viewName);
-                }
-
-                var parsedView = ViewParser.parse(viewName, view);
-
                 var model = {
                     name: name,
                     value: toGenerateFor,
                     label: partName
                 };
 
-                var part = parsedView.view(model);
-                part.onComplete(stackDeferred());
-                deferreds.push(part);
+                if ((additionalInfo[name] && additionalInfo[name].preventEditing) ||
+                    (additionalInfo[partName] && additionalInfo[partName].preventEditing)) {
+                    type = 'hidden';
+                } else if ((additionalInfo[name] && additionalInfo[name].subAction) ||
+                    (additionalInfo[partName] && additionalInfo[partName].subAction)) {
+                    Utils.extend(model, (additionalInfo[name] || additionalInfo[partName]).subAction);
+                    model.editing = !displaying;
+
+                    var subActionPart = Html.Action(model);
+
+                    if (subActionPart instanceof Deferred) {
+                        subActionPart.onComplete(stackDeferred());
+
+                        deferreds.push(subActionPart);
+                    } else {
+                        output.push(subActionPart);
+                    }
+                } else {
+                    var viewName = (displaying ? 'display/' : 'editor/') + type;
+                    var view = ViewLoader.loadView(viewName);
+                    if (!view) {
+                        viewName = displaying ? 'display/string' : 'editor/string';
+                        view = ViewLoader.loadView(viewName);
+                    }
+
+                    var parsedView = ViewParser.parse(viewName, view);
+
+                    var part = parsedView.view(model);
+                    part.onComplete(stackDeferred());
+                    deferreds.push(part);
+                }
             }
         }
 

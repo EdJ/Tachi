@@ -84,7 +84,7 @@ module.exports = function (connectionDetails) {
             var item;
             for (var i = data.length; i--; ) {
                 item = data[i];
-                _internalList[item.id] = item;
+                _internalList[item._id] = item;
             }
 
             _allItems[repoName] = _internalList;
@@ -92,8 +92,8 @@ module.exports = function (connectionDetails) {
 
         var getList = function () {
             var output = [];
-            for (var id in _internalList) {
-                output.push(_internalList[id]);
+            for (var _id in _internalList) {
+                output.push(_internalList[_id]);
             }
 
             output.reverse();
@@ -101,16 +101,16 @@ module.exports = function (connectionDetails) {
             return output;
         };
 
-        this.get = function (id) {
+        this.get = function (_id) {
             var deferred = new Deferred();
 
-            deferred.complete(_internalList[id] || _internalList[id + '']);
+            deferred.complete(_internalList[_id] || _internalList[_id + '']);
 
             return deferred;
         };
 
         this.update = function (post) {
-            _internalList[post.id] = post;
+            _internalList[post._id] = post;
 
             return saveData(repoName, getList());
         };
@@ -120,30 +120,30 @@ module.exports = function (connectionDetails) {
 
             for (var postId in _internalList) {
 
-                var id = _internalList[postId].id;
+                var _id = _internalList[postId]._id;
 
-                if (id > nextPostId) {
-                    nextPostId = id;
+                if (_id > nextPostId) {
+                    nextPostId = _id;
                 }
             }
 
             nextPostId++;
 
-            post.id = nextPostId;
-            _internalList[post.id] = post;
+            post._id = nextPostId;
+            _internalList[post._id] = post;
 
             var saveDeferred = saveData(repoName, getList());
 
             var deferred = new Deferred();
             saveDeferred.onComplete(function() {
-                deferred.complete(post.id);
+                deferred.complete(post._id);
             });
 
             return deferred;
         };
 
-        this.remove = function (id) {
-            delete _internalList[id];
+        this.remove = function (_id) {
+            delete _internalList[_id];
 
             return saveData(repoName, getList());
         };

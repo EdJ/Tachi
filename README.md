@@ -34,7 +34,7 @@ var routeData = {
 		{
 			url: '/',
 			data: {
-				controller: 'Default',
+				controller: 'DefaultController',
 				action: 'index'
 			}
 	  	}

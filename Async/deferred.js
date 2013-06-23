@@ -15,6 +15,18 @@
             return this;
         };
 
+        this.linkWith = function(deferred) {
+            var self = this;
+            deferred.onComplete(function (result) {
+                if (result instanceof Deferred) {
+                    self.linkWith(result);
+                    return;
+                }
+
+                self.complete(result);
+            });
+        };
+
         var initiateCallback = function(callback) {
             process.nextTick(function() {
                 callback(outputData);

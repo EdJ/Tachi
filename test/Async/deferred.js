@@ -34,6 +34,73 @@ describe('Deferred', function() {
 		});
 	});
 
+	it('should allow another Deferred to be linked with itself.', function(done) {
+		var deferred = new Deferred();
+		var secondDeferred = new Deferred();
+		deferred.linkWith(secondDeferred);
+
+		setTimeout(function() {
+			secondDeferred.complete();
+		}, 50);
+
+		deferred.onComplete(function() {
+			deferred.isComplete().should.be.true;
+			secondDeferred.isComplete().should.be.true;
+
+			done();
+		});
+	});
+
+	it('should allow a chain of Deferreds to be linked with itself.', function(done) {
+		var deferred = new Deferred();
+		var secondDeferred = new Deferred();
+		deferred.linkWith(secondDeferred);
+
+		var thirdDeferred = new Deferred();
+		thirdDeferred.onComplete(secondDeferred.complete);
+
+		var fourthDeferred = new Deferred();
+		fourthDeferred.onComplete(thirdDeferred.complete);
+
+		setTimeout(function() {
+			fourthDeferred.complete();
+		}, 50);
+
+		deferred.onComplete(function() {
+			deferred.isComplete().should.be.true;
+			secondDeferred.isComplete().should.be.true;
+			thirdDeferred.isComplete().should.be.true;
+			fourthDeferred.isComplete().should.be.true;
+
+			done();
+		});
+	});
+
+	it('should allow a chain of Deferreds that are linkedto be linked with itself.', function(done) {
+		var deferred = new Deferred();
+		var secondDeferred = new Deferred();
+		deferred.linkWith(secondDeferred);
+
+		var thirdDeferred = new Deferred();
+		secondDeferred.linkWith(thirdDeferred);
+
+		var fourthDeferred = new Deferred();
+		thirdDeferred.linkWith(fourthDeferred);
+
+		setTimeout(function() {
+			fourthDeferred.complete();
+		}, 50);
+
+		deferred.onComplete(function() {
+			deferred.isComplete().should.be.true;
+			secondDeferred.isComplete().should.be.true;
+			thirdDeferred.isComplete().should.be.true;
+			fourthDeferred.isComplete().should.be.true;
+
+			done();
+		});
+	});
+
 	it('should be chainable.', function(done) {
 		var deferred = new Deferred().onComplete(function() {}).complete().onComplete(function() {}).complete().onComplete(function() {
 			deferred.isComplete().should.be.true;

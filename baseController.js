@@ -64,7 +64,7 @@ module.exports = (function() {
     var getParameters = function(controller, action, params) {
         if (typeof controller === 'object') {
             controller.controller = controller.controller || this._name;
-            controller.action = controller.action || 'index';
+            controller.action = (controller.action || 'index').toLowerCase();
 
             return controller;
         }
@@ -80,7 +80,7 @@ module.exports = (function() {
         }
 
         params.controller = controller;
-        params.action = action || 'index';
+        params.action = (action || 'index').toLowerCase();
 
         return params;
     };
@@ -112,11 +112,31 @@ module.exports = (function() {
             Action: function(controller, action, params) {
                 var actualParameters = getParameters.call(this, controller, action, params);
 
-                var controller = classLoader.getController(actualParameters.controller);
+                var controller = this.classLoader.getController(actualParameters.controller);
                 var action = actualParameters.action;
 
                 if (controller && controller[action]) {
-                    return controller[action](actualParameters);
+                    var deferred = new Deferred();
+
+                    controller._promiseCallback = function (result) {
+                        if (result instanceof Deferred) {
+                            result.onComplete(deferred.complete);
+                            return;
+                        }
+
+                        deferred.complete(result);
+                    };
+                    
+                    var value = controller[action](actualParameters);
+
+                    if (value && value instanceof Deferred) {
+                        return value;
+                    } else if (value) {
+                        deferred.complete(value);
+
+                    }
+
+                    return deferred;
                 }
 
                 return '';

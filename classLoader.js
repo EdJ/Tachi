@@ -51,7 +51,9 @@ ClassLoader = module.exports = (function() {
         var self = this;
         var ControllersPath = './Controllers/';
 
-        var controllerLoader = new innerLoader(ControllersPath, baseController);
+        baseController.classLoader = this;
+
+        var controllerLoader = new innerLoader(ControllersPath, baseController, this);
 
         var setServerVars = function(instance, request, response) {
             instance.Request = request;

@@ -1,20 +1,22 @@
 {
   "name": "tachi",
   "description": "Node.js MVC framework for seriously rapid application development.",
-  "version": "0.0.5",
-  "author": "Ed J <ed@ed-j.co.uk>",
+  "version": "0.0.6",
+  "author": {
+    "name": "Ed J",
+    "email": "ed@ed-j.co.uk"
+  },
   "contributors": [
     {
       "name": "Ed J",
       "email": "ed@ed-j.co.uk"
     }
   ],
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
-    "mocha":">= 1.10.0",
-    "should":">= 1.2.2",
-    "proxyquire":">= 0.4.1"
+    "mocha": ">= 1.10.0",
+    "should": ">= 1.2.2",
+    "proxyquire": ">= 0.4.1"
   },
   "keywords": [
     "tachi",
@@ -25,14 +27,27 @@
     "restful",
     "router"
   ],
-  "repository": "git://github.com/EdJ/Tachi",
-  "main": "index",
-  "bin": {
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/EdJ/Tachi"
   },
+  "main": "index",
+  "bin": {},
   "scripts": {
-    "test":"mocha"
+    "test": "mocha"
   },
   "engines": {
     "node": "*"
-  }
+  },
+  "readme": "## Tachi\r\n[![Build Status](https://secure.travis-ci.org/EdJ/Tachi.png?branch=master)](https://travis-ci.org/EdJ/Tachi)\r\n\r\nNode.js MVC framework for seriously rapid application development.\r\n\r\n## Overview\r\n\r\nQuickly get up and running with a node.js MVC app, using a simple view syntax and an ASP.NET MVC-style project layout. Tachi is all about ease of rapid development, with a simple mindset, easily expandable feature set, and a number of features to help increase web application speed.\r\n\r\nCatch me on twitter (http://twitter.com/sigmoidfx) for more info!\r\n\r\n## Quick Start\r\n```bash\r\nnpm install tachi\r\n```\r\n\r\nGrab a copy of the twitter bootstrap template for Tachi (http://github.com/EdJ/Tachi-bootstrap), or just use the following code:\r\n\r\nControllers/DefaultController.js:\r\n```js\r\nmodule.exports = {\r\n\tindex: function () {\r\n\t\treturn this.Json({ message: 'Hi! Welcome to Tachi!'})\r\n\t}\r\n}\r\n```\r\n\r\nindex.js:\r\n```js\r\nvar TachiHandler = require('Tachi');\r\n\r\nvar routeData = {\r\n\troutes: [\r\n\t\t{\r\n\t\t\turl: '/',\r\n\t\t\tdata: {\r\n\t\t\t\tcontroller: 'DefaultController',\r\n\t\t\t\taction: 'index'\r\n\t\t\t}\r\n\t  \t}\r\n\t],\r\n\tdefaultRoute: '/'\r\n};\r\n\r\nvar settings = {\r\n    port: 8080\r\n};\r\n\r\nvar handler = new TachiHandler(settings, routeData);\r\nhandler.start();\r\n```\r\n\r\n## Features\r\n\r\n* Solid, understandable routing\r\n* Familiar MVC model (View(), RedirectToAction(), etc.)\r\n* Simple, fast templating engine\r\n* Minimal work required to quickly build complex web apps\r\n\r\n## License\r\n\r\nCopyright (c) 2013 Ed J <ed@ed-j.co.uk>\r\n\r\nDo what you want with the code; No warranty of any kind is given assuming its use.",
+  "readmeFilename": "README.md",
+  "bugs": {
+    "url": "https://github.com/EdJ/Tachi/issues"
+  },
+  "_id": "tachi@0.0.5",
+  "dist": {
+    "shasum": "0902b7d560317a94d6579e0f7379621f16de0ec9"
+  },
+  "_from": "tachi@latest",
+  "_resolved": "https://registry.npmjs.org/tachi/-/tachi-0.0.5.tgz"
 }
