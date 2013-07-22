@@ -24,7 +24,7 @@ ViewParser = module.exports = {
 
     + "');}if (!dC) {d.complete(p.join(''));}return d;";
 
-    var fn = new Function("obj", str);
+    var fn = new Function("obj", "Html", str);
     var output = {
       properties: properties,
       view: fn

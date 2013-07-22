@@ -21,7 +21,7 @@ module.exports = (function() {
 
         if (toGenerateFor instanceof Array) {
             for (var i = 0, l = toGenerateFor.length; i < l; i++) {
-                var part = generateEditor(toGenerateFor[i], name + '[' + i + ']', i, originalObject, displaying);
+                var part = generateEditor.call(this, toGenerateFor[i], name + '[' + i + ']', i, originalObject, displaying);
                 part.onComplete(stackDeferred());
                 deferreds.push(part);
             }
@@ -37,7 +37,7 @@ module.exports = (function() {
                         continue;
                     }
 
-                    var part = generateEditor(toGenerateFor[prop], name + '.' + prop, prop, originalObject, displaying);
+                    var part = generateEditor.call(this, toGenerateFor[prop], name + '.' + prop, prop, originalObject, displaying);
 
                     part.onComplete(stackDeferred());
                     deferreds.push(part);
@@ -78,7 +78,7 @@ module.exports = (function() {
 
                     var parsedView = ViewParser.parse(viewName, view);
 
-                    var part = parsedView.view(model);
+                    var part = parsedView.view(model, this);
                     part.onComplete(stackDeferred());
                     deferreds.push(part);
                 }
@@ -96,10 +96,10 @@ module.exports = (function() {
 
     return {
         generateEditor: function(toGenerateFor, name, partName) {
-            return generateEditor(toGenerateFor, name, partName, toGenerateFor, false);
+            return generateEditor.call(this, toGenerateFor, name, partName, toGenerateFor, false);
         },
         generateDisplay: function(toGenerateFor, name, partName) {
-            return generateEditor(toGenerateFor, name || '', partName, toGenerateFor, true);
+            return generateEditor.call(this, toGenerateFor, name || '', partName, toGenerateFor, true);
         }
     };
 })();

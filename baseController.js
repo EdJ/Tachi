@@ -8,6 +8,8 @@ var Dependency = require('./dependency');
 
 var authHandler = require('./Auth/authHandler');
 
+var HtmlHelper = require('./Utilities/html');
+
 module.exports = (function() {
     var getHtmlView = function(viewName) {
         var view = ViewLoader.loadView(viewName);
@@ -18,8 +20,8 @@ module.exports = (function() {
         return ViewParser.parse(viewName, view);
     };
 
-    var applyView = function(view, data) {
-        var appliedView = view.view(data);
+    var applyView = function(view, data, htmlHelper) {
+        var appliedView = view.view(data, htmlHelper);
         if (view.properties.overView) {
             var toApply = {
                 view: appliedView
@@ -34,7 +36,7 @@ module.exports = (function() {
             }
 
             var overView = getHtmlView((view.properties.overView || '').toLowerCase());
-            return applyView(overView, toApply);
+            return applyView(overView, toApply, htmlHelper);
         }
 
         return appliedView;
@@ -86,79 +88,85 @@ module.exports = (function() {
     };
 
     return function BaseController(findRoute) {
-        return {
-            AsyncFinished: function(data) {
-                this._promiseCallback(data);
-            },
-            View: function(view, model) {
-                var c = adjustModelContext(model);
-                var view = loadView(this, view);
+        this.AsyncFinished = function(data) {
+            this._promiseCallback(data);
+        };
 
-                if (!view) {
-                    return;
-                }
+        this.View = function(view, model) {
+            var c = adjustModelContext(model);
+            var view = loadView(this, view);
 
-                return applyView(view, c);
-            },
-            Partial: function(view, model) {
-                var c = adjustModelContext(model);
-                var view = loadView(this, view);
-                if (!view) {
-                    return;
-                }
+            if (!view) {
+                return;
+            }
 
-                return view.view(c);
-            },
-            Action: function(controller, action, params) {
-                var actualParameters = getParameters.call(this, controller, action, params);
+            return applyView(view, c, new HtmlHelper(this));
+        };
 
-                var controller = this.classLoader.getController(actualParameters.controller);
-                var action = actualParameters.action;
+        this.Partial = function(view, model) {
+            var c = adjustModelContext(model);
+            var view = loadView(this, view);
+            if (!view) {
+                return;
+            }
 
-                if (controller && controller[action]) {
-                    var deferred = new Deferred();
+            return view.view(c, new HtmlHelper(this));
+        };
 
-                    controller._promiseCallback = function (result) {
-                        if (result instanceof Deferred) {
-                            result.onComplete(deferred.complete);
-                            return;
-                        }
+        this.Action = function(controller, action, params) {
+            var actualParameters = getParameters.call(this, controller, action, params);
 
-                        deferred.complete(result);
-                    };
-                    
-                    var value = controller[action](actualParameters);
+            var controller = this.classLoader.getController(actualParameters.controller);
+            var action = actualParameters.action;
 
-                    if (value && value instanceof Deferred) {
-                        return value;
-                    } else if (value) {
-                        deferred.complete(value);
+            if (controller && controller[action]) {
+                var deferred = new Deferred();
 
+                controller._promiseCallback = function(result) {
+                    if (result instanceof Deferred) {
+                        result.onComplete(deferred.complete);
+                        return;
                     }
 
-                    return deferred;
+                    deferred.complete(result);
+                };
+
+
+                var value = controller[action](actualParameters);
+
+                if (value && value instanceof Deferred) {
+                    return value;
+                } else if (value) {
+                    deferred.complete(value);
+
                 }
 
-                return '';
-            },
-            ActionLink: function(controller, action, params) {
-                var actualParameters = getParameters.call(this, controller, action, params);
-
-                return findRoute(actualParameters);
-            },
-            Json: function(data) {
-                return JSON.stringify(data);
-            },
-            RedirectToAction: function(controller, action, params) {
-                var link = this.ActionLink(controller, action, params);
-
-                return {
-                    _redirect: link
-                }
-            },
-            Authenticate: function() {
-                authHandler.authenticate(this);
+                return deferred;
             }
+
+            return '';
+        };
+
+        this.ActionLink = function(controller, action, params) {
+            var actualParameters = getParameters.call(this, controller, action, params);
+
+            return findRoute(actualParameters);
+        };
+
+        this.Json = function(data) {
+            return JSON.stringify(data);
+        };
+
+        this.RedirectToAction = function(controller, action, params) {
+            var link = this.ActionLink(controller, action, params);
+
+            return {
+                _redirect: link
+            }
+        };
+
+        this.Authenticate = function() {
+            authHandler.authenticate(this);
         };
     };
 
