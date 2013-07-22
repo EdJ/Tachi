@@ -8,7 +8,7 @@ module.exports = function (settings) {
         return logger;
     })();
     
-    Repository = require(settings.repository || 'tachi/Repositories/jsonRepository')(settings.connectionDetails);
+    Repository = settings.repository || require('tachi/Repositories/jsonRepository')(settings.connectionDetails);
     AppRoot = settings.appRoot || __dirname + '/../../';
     
     Deferred = require('tachi/Async/deferred');
