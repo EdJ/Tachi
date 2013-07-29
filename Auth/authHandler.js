@@ -54,7 +54,7 @@ AuthHandler = module.exports = (function () {
         addAuthenticatedUser(key);
 
         var newCookies = {};
-        newCookies[cookieKey] = key;
+        newCookies[cookieKey] = key + ';path=/;HttpOnly';
 
         cookie.set(res, newCookies);
     };
