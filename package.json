@@ -1,7 +1,7 @@
 {
   "name": "tachi",
   "description": "Node.js MVC framework for seriously rapid application development.",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "author": {
     "name": "Ed J",
     "email": "ed@ed-j.co.uk"
